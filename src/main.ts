@@ -5,8 +5,17 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 // Module
 import { AppModule } from './app.module';
 
+// Commons
+import { CORS } from './commons/constants';
+
+// Libreries
+import * as morgan from 'morgan';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // use librerie morgan
+  app.use(morgan('dev'));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -16,6 +25,7 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.setGlobalPrefix(process.env.APP_ROOT);
 
   const config = new DocumentBuilder()
     .setTitle('Template Proyects')
@@ -26,6 +36,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/docs', app, document);
 
-  await app.listen(3000);
+  app.enableCors(CORS);
+
+  await app.listen(process.env.APP_PORT);
 }
 bootstrap();
