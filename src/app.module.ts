@@ -2,11 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
-// Controllers
-import { AppController } from './app.controller';
-
 // Services
-import { AppService } from './app.service';
 import { AuthService } from './auth/services/auth/auth.service';
 
 // Module
@@ -32,7 +28,7 @@ import { configSchema } from '../config/validationSchema';
     AuthModule,
     JwtModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, AuthService],
+  controllers: [],
+  providers: [AuthService],
 })
 export class AppModule {}
