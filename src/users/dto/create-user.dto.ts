@@ -1,7 +1,8 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 // Commons
-import { ROLES } from 'src/commons/models';
+import { GENDER, ROLES } from 'src/commons/models';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -23,6 +24,19 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsEnum(ROLES)
   readonly role: ROLES;
+
+  @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
+  readonly birthday: Date
+
+  @IsNotEmpty()
+  @IsEnum(GENDER)
+  readonly gender: GENDER
+
+  @IsNotEmpty()
+  @IsNumber()
+  readonly phone_number: number
 }
 
 export class ResponseCreateUserDto {
@@ -31,6 +45,9 @@ export class ResponseCreateUserDto {
   lastName: string;
   email: string;
   role: string;
+  birthday: Date
+  gender: GENDER
+  phone_number: number;
   deleteAt: Date;
   createdAt: Date;
   updatedAt: Date;
