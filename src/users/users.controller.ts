@@ -4,6 +4,7 @@ import {
   Body,
   UseGuards,
   UseInterceptors,
+  Get,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -53,9 +54,24 @@ export class UsersController {
     type: () => ResponseCreateUserDto,
     description: 'create user successfully.',
   })
-  @Roles(ROLES.SUPERADMIN)
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all users.',
+    description: 'this endpoint is get all users.',
+  })
+  @ApiBody({
+    type: CreateUserDto,
+    description: 'The fields to be list users.',
+  })
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
+  @Get()
+  getAllUsers() {
+    return this.usersService.getAllUsers()
   }
 }

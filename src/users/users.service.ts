@@ -35,6 +35,14 @@ export class UsersService {
     }
   }
 
+  async getAllUsers() {
+    try {
+      return this.usersRepository.find()
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
+  }
+
   findByEmail({ email }: { email: string }) {
     return this.usersRepository.findOne({ where: { email } });
   }
