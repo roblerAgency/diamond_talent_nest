@@ -2,7 +2,7 @@ import { OmitType, PartialType } from '@nestjs/swagger';
 
 // DTO'S
 import { CreateUserDto } from './create-user.dto';
-import { IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 const ExcludedUserFields = ['password', 'email'] as const;
 export class UpdateUserDto extends OmitType(
@@ -51,4 +51,7 @@ export class UpdateUserDto extends OmitType(
 
   @IsNumber()
   height: number;
+
+  @IsBoolean()
+  completeRegister: boolean
 }
