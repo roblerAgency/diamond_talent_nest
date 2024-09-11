@@ -31,6 +31,9 @@ export class User extends BaseEntity implements IUser {
   role: ROLES;
 
   // ? Nuevos campos
+  @Column('int', { default: null })
+  age: number;
+
   @Column({ type: 'date', default: null })
   birthday: Date;
 
@@ -40,14 +43,14 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'date', default: null, name: 'time_zone' })
   timeZone: Date;
 
-  @Column({ type: 'bigint', default: null, name: 'phone_number' })
-  phoneNumber: number;
+  @Column({ type: 'varchar', length: 150, default: null, name: 'phone_number' })
+  phoneNumber: string;
 
-  @Column({ type: 'bigint', default: null, name: 'alternate_phone_number' })
-  alternatePhoneNumber: number;
+  @Column({ type: 'varchar', length: 150, default: null, name: 'alternate_phone_number' })
+  alternatePhoneNumber: string;
 
   @Column({ type: 'boolean', default: false, name: 'registered_self_employed' })
-  registered_self_employed: boolean;
+  registeredSelfEmployed: boolean;
 
   @Column({ type: 'varchar', length: 100, default: null })
   etnia: string;
