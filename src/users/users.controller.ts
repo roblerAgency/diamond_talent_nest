@@ -21,7 +21,7 @@ import {
 import { UsersService } from './users.service';
 
 // DTO'S
-import { CreateUserDto, ResponseCreateUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto, ResponseCreateUserDto } from './dto';
 
 // Guards
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -36,6 +36,9 @@ import { ROLES } from '../commons/models';
 
 // Interceptors
 import { ResponseInterceptor } from '../commons/interceptors/response.interceptor';
+
+// Entities
+import { User } from './entities/user.entity';
 
 @ApiTags('users')
 @Controller('users')
@@ -87,8 +90,8 @@ export class UsersController {
   @Patch(':id')
   editUser(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateUserDto,
-  ) {
+    @Body() body,
+  ): Promise<User> {
     return this.usersService.editUser({ id, body });
   }
 }

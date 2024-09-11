@@ -80,7 +80,7 @@ export class User extends BaseEntity implements IUser {
   location: string;
 
   @Column({ type: 'varchar', length: 255, default: null })
-  nacionality: string;
+  nationality: string;
 
   @Column({ type: 'varchar', length: 255, default: null, name: 'about_me' })
   aboutMe: string;

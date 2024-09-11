@@ -37,6 +37,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   readonly phoneNumber: string
+
+  @IsNotEmpty()
+  @IsString()
+  readonly nationality: string
 }
 
 export class ResponseCreateUserDto {

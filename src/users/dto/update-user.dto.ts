@@ -2,10 +2,53 @@ import { OmitType, PartialType } from '@nestjs/swagger';
 
 // DTO'S
 import { CreateUserDto } from './create-user.dto';
+import { IsNumber, IsString } from 'class-validator';
 
 const ExcludedUserFields = ['password', 'email'] as const;
 export class UpdateUserDto extends OmitType(
-    PartialType(CreateUserDto),
-    ExcludedUserFields,
-  ) {
+  PartialType(CreateUserDto),
+  ExcludedUserFields,
+) {
+
+  @IsString()
+  etnia: string;
+
+  @IsString()
+  hair: string;
+
+  @IsString()
+  eye: string;
+
+  @IsString()
+  shoes: string;
+
+  @IsString()
+  bust: string;
+
+  @IsString()
+  waist: string;
+
+  @IsString()
+  hips: string;
+
+  @IsString()
+  dress: string;
+
+  @IsString()
+  location: string;
+
+  @IsString()
+  nacionality: string;
+
+  @IsString()
+  aboutMe: string;
+
+  @IsString()
+  pictureProfile: string;
+
+  @IsString()
+  socialMediaNetwork: string;
+
+  @IsNumber()
+  height: number;
 }
