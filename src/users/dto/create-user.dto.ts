@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 // Commons
-import { GENDER, ROLES } from 'src/commons/models';
+import { GENDER, ROLES, USER_ROLES } from 'src/commons/models';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -35,12 +35,12 @@ export class CreateUserDto {
   readonly gender: GENDER
 
   @IsNotEmpty()
-  @IsString()
-  readonly phoneNumber: string
+  @IsEnum(USER_ROLES)
+  readonly userRole: USER_ROLES
 
   @IsNotEmpty()
   @IsString()
-  readonly nationality: string
+  readonly phoneNumber: string
 }
 
 export class ResponseCreateUserDto {
@@ -51,6 +51,7 @@ export class ResponseCreateUserDto {
   role: string;
   birthday: Date
   gender: GENDER
+  userRole: USER_ROLES
   phoneNumber: string;
   deleteAt: Date;
   createdAt: Date;

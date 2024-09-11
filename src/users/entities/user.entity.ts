@@ -3,7 +3,7 @@ import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 
 // Commons
-import { ROLES, GENDER } from '../../commons/models';
+import { ROLES, GENDER, USER_ROLES } from '../../commons/models';
 import { BaseEntity } from '../../commons/baseEntity';
 
 // Interfaces
@@ -30,7 +30,9 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'enum', enum: ROLES })
   role: ROLES;
 
-  // ? Nuevos campos
+  @Column({ type: 'enum', enum: USER_ROLES })
+  userRole: USER_ROLES;
+
   @Column('int', { default: null })
   age: number;
 
