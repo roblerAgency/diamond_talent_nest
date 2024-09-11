@@ -54,6 +54,9 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'boolean', default: false, name: 'registered_self_employed' })
   registeredSelfEmployed: boolean;
 
+  @Column({ type: 'boolean', default: false, name: 'complete_register' })
+  completeRegister: boolean;
+
   @Column({ type: 'varchar', length: 100, default: null })
   etnia: string;
 
