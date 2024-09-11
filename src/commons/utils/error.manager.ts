@@ -20,3 +20,12 @@ export class ErrorManager extends Error {
     }
   }
 }
+
+export const errorManagerParamCharacter = ({ id }) => {
+  if (!Number.isInteger(id) || !id) {
+    throw new ErrorManager({
+      type: 'BAD_REQUEST',
+      message: `Only numeric type IDs are allowed ${id}`,
+    });
+  }
+} 

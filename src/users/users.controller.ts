@@ -5,6 +5,9 @@ import {
   UseGuards,
   UseInterceptors,
   Get,
+  Patch,
+  Param,
+  ParseIntPipe
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,13 +21,14 @@ import {
 import { UsersService } from './users.service';
 
 // DTO'S
-import { CreateUserDto, ResponseCreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, ResponseCreateUserDto, UpdateUserDto } from './dto';
 
 // Guards
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 
 // Decorators
+import { IsPublic } from 'src/auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 // Commons
@@ -54,7 +58,7 @@ export class UsersController {
     type: () => ResponseCreateUserDto,
     description: 'create user successfully.',
   })
-  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
+  @IsPublic()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
@@ -73,5 +77,18 @@ export class UsersController {
   @Get()
   getAllUsers() {
     return this.usersService.getAllUsers()
+  }
+
+  @Get(':id')
+  getIdUser(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getUserId({ id })
+  }
+
+  @Patch(':id')
+  editUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateUserDto,
+  ) {
+    return this.usersService.editUser({ id, body });
   }
 }
