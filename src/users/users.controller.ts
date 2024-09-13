@@ -7,7 +7,8 @@ import {
   Get,
   Patch,
   Param,
-  ParseIntPipe
+  ParseIntPipe,
+  Query
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -32,7 +33,7 @@ import { IsPublic } from 'src/auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 // Commons
-import { ROLES } from '../commons/models';
+import { ROLES } from '../commons/';
 
 // Interceptors
 import { ResponseInterceptor } from '../commons/interceptors/response.interceptor';
@@ -78,8 +79,8 @@ export class UsersController {
   })
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Get()
-  getAllUsers() {
-    return this.usersService.getAllUsers()
+  getAllUsers(@Query() queries: { limit: number, page: number, search: any }) {
+    return this.usersService.getAllUsers({ queries })
   }
 
   @Get(':id')

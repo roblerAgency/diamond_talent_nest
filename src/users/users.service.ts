@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 
 // DTO'S
 import { CreateUserDto, UpdateUserDto } from './dto';
@@ -11,6 +11,10 @@ import { User } from './entities/user.entity';
 // Commons
 import {
   ErrorManager,
+  GENDER,
+  NATIONALITY,
+  ROLES,
+  USER_ROLES,
   calculateAge,
   errorManagerParamCharacter,
 } from '../../src/commons';
@@ -43,9 +47,62 @@ export class UsersService {
     }
   }
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers({
+    queries,
+  }: {
+    queries: { limit: number; page: number; search: any };
+  }) {
     try {
-      return this.usersRepository.find();
+      const { search, page = 1, limit = 10 } = queries;
+
+      let whereConditions = [];
+
+      if (search) {
+        // search for GENDER
+        const matchingGenders = Object.values(GENDER).filter((gender) =>
+          gender.toLowerCase().includes(search),
+        );
+
+        // search for NATIONALITY
+        const matchingNationalities = Object.values(NATIONALITY).filter(
+          (nationality) => nationality.toLowerCase().includes(search),
+        );
+
+        // search for ROLE
+        const matchingRoles = Object.values(ROLES).filter((roles) =>
+          roles.toLowerCase().includes(search),
+        );
+
+        // search for User role
+        const matchingUserRoles = Object.values(USER_ROLES).filter((roles) =>
+          roles.toLowerCase().includes(search),
+        );
+
+        whereConditions = [
+          { firstName: ILike(`%${search}%`) },
+          { lastName: ILike(`%${search}%`) },
+          { email: ILike(`%${search}%`) },
+          { location: ILike(`%${search}%`) },
+          { dress: ILike(`%${search}%`) },
+          { gender: In(matchingGenders) },
+          { nationality: In(matchingNationalities) },
+          { role: In(matchingRoles) },
+          { userRole: In(matchingUserRoles) },
+        ];
+      }
+
+      const [users, count] = whereConditions.length
+        ? await this.usersRepository.findAndCount({
+            where: whereConditions,
+            skip: (page - 1) * limit,
+            take: limit,
+          })
+        : await this.usersRepository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
+          });
+
+      return { users, count };
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
@@ -69,7 +126,13 @@ export class UsersService {
     }
   }
 
-  async editUser({ id, body }: { id: number; body: UpdateUserDto }): Promise<User> {
+  async editUser({
+    id,
+    body,
+  }: {
+    id: number;
+    body: UpdateUserDto;
+  }): Promise<User> {
     try {
       if (!Object.values(body).length) {
         throw new ErrorManager({
