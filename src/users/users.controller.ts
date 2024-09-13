@@ -79,7 +79,7 @@ export class UsersController {
   })
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Get()
-  getAllUsers(@Query() queries: { limit: number, page: number, search: string | number }) {
+  getAllUsers(@Query() queries: { limit: number, page: number, search: any }) {
     return this.usersService.getAllUsers({ queries })
   }
 

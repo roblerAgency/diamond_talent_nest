@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 
 // DTO'S
 import { CreateUserDto, UpdateUserDto } from './dto';
@@ -11,7 +11,10 @@ import { User } from './entities/user.entity';
 // Commons
 import {
   ErrorManager,
-  QueryOptionsDto,
+  GENDER,
+  NATIONALITY,
+  ROLES,
+  USER_ROLES,
   calculateAge,
   errorManagerParamCharacter,
 } from '../../src/commons';
@@ -44,18 +47,53 @@ export class UsersService {
     }
   }
 
-  async getAllUsers({ queries }: { queries: QueryOptionsDto }) {
+  async getAllUsers({
+    queries,
+  }: {
+    queries: { limit: number; page: number; search: any };
+  }) {
     try {
-      const { search, page, limit } = queries;
+      const { search, page = 1, limit = 10 } = queries;
 
-      const [users, count] = search
+      let whereConditions = [];
+
+      if (search) {
+        // search for GENDER
+        const matchingGenders = Object.values(GENDER).filter((gender) =>
+          gender.toLowerCase().includes(search),
+        );
+
+        // search for NATIONALITY
+        const matchingNationalities = Object.values(NATIONALITY).filter(
+          (nationality) => nationality.toLowerCase().includes(search),
+        );
+
+        // search for ROLE
+        const matchingRoles = Object.values(ROLES).filter((roles) =>
+          roles.toLowerCase().includes(search),
+        );
+
+        // search for User role
+        const matchingUserRoles = Object.values(USER_ROLES).filter((roles) =>
+          roles.toLowerCase().includes(search),
+        );
+
+        whereConditions = [
+          { firstName: ILike(`%${search}%`) },
+          { lastName: ILike(`%${search}%`) },
+          { email: ILike(`%${search}%`) },
+          { location: ILike(`%${search}%`) },
+          { dress: ILike(`%${search}%`) },
+          { gender: In(matchingGenders) },
+          { nationality: In(matchingNationalities) },
+          { role: In(matchingRoles) },
+          { userRole: In(matchingUserRoles) },
+        ];
+      }
+
+      const [users, count] = whereConditions.length
         ? await this.usersRepository.findAndCount({
-            where: [
-              { firstName: ILike(`%${search}%`) },
-              { lastName: ILike(`%${search}%`) },
-              { email: ILike(`%${search}%`) },
-              { eye: ILike(`%${search}%`) },
-            ],
+            where: whereConditions,
             skip: (page - 1) * limit,
             take: limit,
           })

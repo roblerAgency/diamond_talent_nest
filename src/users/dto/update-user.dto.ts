@@ -1,8 +1,11 @@
 import { OmitType, PartialType } from '@nestjs/swagger';
 
+import { IsBoolean, IsNumber, IsString, IsEnum } from 'class-validator';
 // DTO'S
 import { CreateUserDto } from './create-user.dto';
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+
+// Commons
+import { EYES, NATIONALITY } from 'src/commons';
 
 const ExcludedUserFields = ['password', 'email'] as const;
 export class UpdateUserDto extends OmitType(
@@ -16,8 +19,8 @@ export class UpdateUserDto extends OmitType(
   @IsString()
   hair: string;
 
-  @IsString()
-  eye: string;
+  @IsEnum(EYES)
+  eye: EYES;
 
   @IsString()
   shoes: string;
@@ -37,8 +40,8 @@ export class UpdateUserDto extends OmitType(
   @IsString()
   location: string;
 
-  @IsString()
-  nacionality: string;
+  @IsEnum(NATIONALITY)
+  nacionality: NATIONALITY;
 
   @IsString()
   aboutMe: string;
