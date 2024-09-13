@@ -23,13 +23,13 @@ export class UpdateUserDto extends OmitType(
   shoes: string;
 
   @IsString()
-  bust: string;
+  bust: number;
 
   @IsString()
-  waist: string;
+  waist: number;
 
   @IsString()
-  hips: string;
+  hips: number;
 
   @IsString()
   dress: string;

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 // DTO'S
 import { CreateUserDto, UpdateUserDto } from './dto';
@@ -11,6 +11,7 @@ import { User } from './entities/user.entity';
 // Commons
 import {
   ErrorManager,
+  QueryOptionsDto,
   calculateAge,
   errorManagerParamCharacter,
 } from '../../src/commons';
@@ -43,9 +44,27 @@ export class UsersService {
     }
   }
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers({ queries }: { queries: QueryOptionsDto }) {
     try {
-      return this.usersRepository.find();
+      const { search, page, limit } = queries;
+
+      const [users, count] = search
+        ? await this.usersRepository.findAndCount({
+            where: [
+              { firstName: ILike(`%${search}%`) },
+              { lastName: ILike(`%${search}%`) },
+              { email: ILike(`%${search}%`) },
+              { eye: ILike(`%${search}%`) },
+            ],
+            skip: (page - 1) * limit,
+            take: limit,
+          })
+        : await this.usersRepository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
+          });
+
+      return { users, count };
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
@@ -69,7 +88,13 @@ export class UsersService {
     }
   }
 
-  async editUser({ id, body }: { id: number; body: UpdateUserDto }): Promise<User> {
+  async editUser({
+    id,
+    body,
+  }: {
+    id: number;
+    body: UpdateUserDto;
+  }): Promise<User> {
     try {
       if (!Object.values(body).length) {
         throw new ErrorManager({

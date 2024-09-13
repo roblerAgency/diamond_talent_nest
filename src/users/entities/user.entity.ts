@@ -69,14 +69,14 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'varchar', length: 100, default: null })
   shoes: string;
 
-  @Column({ type: 'varchar', length: 100, default: null })
-  bust: string;
+  @Column('decimal', { precision: 5, scale: 2, default: null })
+  bust: number;
 
-  @Column({ type: 'varchar', length: 255, default: null })
-  waist: string;
+  @Column('decimal', { precision: 5, scale: 2, default: null })
+  waist: number;
 
-  @Column({ type: 'varchar', length: 255, default: null })
-  hips: string;
+  @Column('decimal', { precision: 5, scale: 2, default: null })
+  hips: number;
 
   @Column({ type: 'varchar', length: 255, default: null })
   dress: string;
@@ -103,11 +103,7 @@ export class User extends BaseEntity implements IUser {
 
   @Column('decimal', { precision: 5, scale: 2, default: null })
   height: number;
-
-  // disciplines: manyToOne
-
-  // languages: manyToOne
-
+  
   // pictures: manyToOne
 
   // videos: manyToOne
