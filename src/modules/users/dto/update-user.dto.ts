@@ -5,7 +5,7 @@ import { IsBoolean, IsNumber, IsString, IsEnum } from 'class-validator';
 import { CreateUserDto } from './create-user.dto';
 
 // Commons
-import { EYES, NATIONALITY } from 'src/commons';
+import { EYES, NATIONALITY, TYPE_MODELING } from 'src/commons';
 
 const ExcludedUserFields = ['password', 'email'] as const;
 export class UpdateUserDto extends OmitType(
@@ -52,9 +52,33 @@ export class UpdateUserDto extends OmitType(
   @IsString()
   socialMediaNetwork: string;
 
+  @IsString()
+  address: string;
+
   @IsNumber()
   height: number;
 
+  @IsNumber()
+  weight: number;
+
+  @IsNumber()
+  clothing_size: number;
+
+  @IsNumber()
+  contact: number;
+
   @IsBoolean()
   completeRegister: boolean
+
+  @IsString()
+  firstName: string;
+
+  @IsString()
+  lastName: string;
+
+  @IsString()
+  footwear: string;
+
+  @IsEnum(TYPE_MODELING)
+  weeklyHours: TYPE_MODELING
 }

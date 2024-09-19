@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, In, Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
 // DTO'S
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto } from './dto';
 
 // Entity
+import { TypesOfModeling } from '../typesOfModeling/entities/typesOfModeling.entity';
+import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
 import { User } from './entities/user.entity';
 
 // Commons
@@ -17,15 +19,22 @@ import {
   USER_ROLES,
   calculateAge,
   errorManagerParamCharacter,
-} from '../../src/commons';
+} from '../../../src/commons';
+import { WorkingDaysWeek } from '../workingDaysWeek/entities/workingDaysWeek.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(UserLanguage)
+    private userLanguageRepository: Repository<UserLanguage>,
+    @InjectRepository(TypesOfModeling)
+    private typeOfModelingRepository: Repository<TypesOfModeling>,
+    @InjectRepository(WorkingDaysWeek)
+    private workingDaysWeekRepository: Repository<WorkingDaysWeek>,
   ) {}
 
-  async create(data: CreateUserDto): Promise<CreateUserDto> {
+  async create(data: CreateUserDto): Promise<User> {
     try {
       const user = await this.findByEmail({ email: data.email });
 
@@ -51,7 +60,7 @@ export class UsersService {
     queries,
   }: {
     queries: { limit: number; page: number; search: any };
-  }) {
+  }): Promise<{ users: User[]; count: number }> {
     try {
       const { search, page = 1, limit = 10 } = queries;
 
@@ -83,7 +92,7 @@ export class UsersService {
           { lastName: ILike(`%${search}%`) },
           { email: ILike(`%${search}%`) },
           { location: ILike(`%${search}%`) },
-          { dress: ILike(`%${search}%`) },
+          { address: ILike(`%${search}%`) },
           { gender: In(matchingGenders) },
           { nationality: In(matchingNationalities) },
           { role: In(matchingRoles) },
@@ -108,7 +117,7 @@ export class UsersService {
     }
   }
 
-  async getUserId({ id }): Promise<User> {
+  async getUserId({ id }: { id: number }): Promise<User> {
     try {
       errorManagerParamCharacter({ id });
       const user = await this.usersRepository.findOneBy({ id });
@@ -126,13 +135,7 @@ export class UsersService {
     }
   }
 
-  async editUser({
-    id,
-    body,
-  }: {
-    id: number;
-    body: UpdateUserDto;
-  }): Promise<User> {
+  async editUser({ id, body }): Promise<User> {
     try {
       if (!Object.values(body).length) {
         throw new ErrorManager({
@@ -143,6 +146,49 @@ export class UsersService {
 
       const user = await this.getUserId({ id });
 
+      if (body?.userLanguage) {
+        const languagesItemsArray = await Promise.all(
+          body.userLanguage.map((item) =>
+            this.userLanguageRepository.create({
+              users: user,
+              languages: item,
+            }),
+          ),
+        );
+
+        await this.userLanguageRepository.save(languagesItemsArray);
+      }
+
+      if (body?.typesOfModeling) {
+        const typesOfModelingItemsArray = await Promise.all(
+          body.typesOfModeling.map((item) =>
+            this.typeOfModelingRepository.create({
+              users: user,
+              typesOfModeling: item,
+            }),
+          ),
+        );
+
+        await this.typeOfModelingRepository.save(typesOfModelingItemsArray);
+      }
+
+      if (body?.workingDaysWeek) {
+        const workingDaysWeekArray = await Promise.all(
+          body.workingDaysWeek.map((item) =>
+            this.workingDaysWeekRepository.create({
+              users: user,
+              workingDaysWeek: item,
+            }),
+          ),
+        );
+
+        await this.typeOfModelingRepository.save(workingDaysWeekArray);
+      }
+
+      delete body.workingDaysWeek;
+      delete body.userLanguage;
+      delete body.typesOfModeling;
+
       const updateUser = Object.assign(user, body);
       await this.usersRepository.update(id, updateUser);
 
@@ -152,7 +198,11 @@ export class UsersService {
     }
   }
 
-  findByEmail({ email }: { email: string }): Promise<User> {
-    return this.usersRepository.findOne({ where: { email } });
+  async findByEmail({ email }: { email: string }): Promise<User> {
+    try {
+      return await this.usersRepository.findOne({ where: { email } });
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
   }
 }

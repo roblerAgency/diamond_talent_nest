@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 // Commons
-import { GENDER, ROLES, USER_ROLES } from 'src/commons/models';
+import { GENDER, ROLES, USER_ROLES } from 'src/commons';
 
 export class CreateUserDto {
   @IsNotEmpty()

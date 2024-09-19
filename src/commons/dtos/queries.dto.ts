@@ -23,5 +23,5 @@ export class QueryOptionsDto {
   limit?: number = 10;
 
   @IsOptional()
-  search?: string | number;
+  search?: any;
 }

@@ -8,7 +8,7 @@ import {
   Patch,
   Param,
   ParseIntPipe,
-  Query
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -25,18 +25,17 @@ import { UsersService } from './users.service';
 import { CreateUserDto, ResponseCreateUserDto } from './dto';
 
 // Guards
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
 
 // Decorators
 import { IsPublic } from 'src/auth/decorators/public.decorator';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 // Commons
-import { ROLES } from '../commons/';
+import { ResponseInterceptor, ROLES } from '../../commons';
 
 // Interceptors
-import { ResponseInterceptor } from '../commons/interceptors/response.interceptor';
 
 // Entities
 import { User } from './entities/user.entity';
@@ -64,7 +63,7 @@ export class UsersController {
   })
   @IsPublic()
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
 
@@ -77,22 +76,24 @@ export class UsersController {
     type: CreateUserDto,
     description: 'The fields to be list users.',
   })
-  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
   @Get()
-  getAllUsers(@Query() queries: { limit: number, page: number, search: any }) {
-    return this.usersService.getAllUsers({ queries })
+  getAllUsers(
+    @Query() queries: { limit: number; page: number; search: any },
+  ): Promise<{ users: User[]; count: number }> {
+    return this.usersService.getAllUsers({ queries });
   }
 
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
   @Get(':id')
-  getIdUser(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getUserId({ id })
+  getIdUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
+    return this.usersService.getUserId({ id });
   }
 
+  @IsPublic()
+  // @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
   @Patch(':id')
-  editUser(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body,
-  ): Promise<User> {
+  editUser(@Param('id', ParseIntPipe) id: number, @Body() body): Promise<User> {
     return this.usersService.editUser({ id, body });
   }
 }
