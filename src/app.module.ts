@@ -6,8 +6,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth/services/auth/auth.service';
 
 // Module
-import { UsersModule } from './users/users.module';
+import { UserLanguageModule } from './userLanguage/userLanguage.module';
 import { DatabaseModule } from './database/database.module';
+import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 
 // Const
@@ -27,6 +28,7 @@ import { configSchema } from '../config/validationSchema';
     DatabaseModule,
     AuthModule,
     JwtModule,
+    UserLanguageModule,
   ],
   controllers: [],
   providers: [AuthService],

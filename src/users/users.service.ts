@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, In, Repository } from 'typeorm';
 
 // DTO'S
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto } from './dto';
 
 // Entity
 import { User } from './entities/user.entity';
@@ -16,16 +16,21 @@ import {
   ROLES,
   USER_ROLES,
   calculateAge,
-  errorManagerParamCharacter,
+  errorManagerParamCharacter
 } from '../../src/commons';
+
+// Entity
+import { UserLanguage } from 'src/userLanguage/entities/userLanguage.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(UserLanguage)
+    private userLanguageRepository: Repository<UserLanguage>,
   ) {}
 
-  async create(data: CreateUserDto): Promise<CreateUserDto> {
+  async create(data: CreateUserDto) {
     try {
       const user = await this.findByEmail({ email: data.email });
 
@@ -126,13 +131,7 @@ export class UsersService {
     }
   }
 
-  async editUser({
-    id,
-    body,
-  }: {
-    id: number;
-    body: UpdateUserDto;
-  }): Promise<User> {
+  async editUser({ id, body }): Promise<User> {
     try {
       if (!Object.values(body).length) {
         throw new ErrorManager({
@@ -142,6 +141,21 @@ export class UsersService {
       }
 
       const user = await this.getUserId({ id });
+
+      if (body?.userLanguage) {
+        const languagesItemsArray = await Promise.all(
+          body.userLanguage.map(async (item) => {
+            const languagesItem = this.userLanguageRepository.create({
+              users: user,
+              languages: item,
+            });
+
+            return languagesItem;
+          }),
+        );
+
+        await this.userLanguageRepository.save(languagesItemsArray);
+      }
 
       const updateUser = Object.assign(user, body);
       await this.usersRepository.update(id, updateUser);

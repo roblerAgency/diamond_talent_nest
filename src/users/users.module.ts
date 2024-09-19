@@ -9,9 +9,10 @@ import { UsersController } from './users.controller';
 
 // Entity
 import { User } from './entities/user.entity';
+import { UserLanguage } from 'src/userLanguage/entities/userLanguage.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User, UserLanguage])],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

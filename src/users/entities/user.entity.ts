@@ -1,9 +1,21 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 
 // Commons
-import { ROLES, GENDER, USER_ROLES, EYES, NATIONALITY, BaseEntity, IUser } from '../../commons/';
+import {
+  ROLES,
+  GENDER,
+  USER_ROLES,
+  EYES,
+  NATIONALITY,
+  BaseEntity,
+  IUser,
+  CITIES
+} from '../../commons/';
+
+// Entities
+import { UserLanguage } from 'src/userLanguage/entities/userLanguage.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity implements IUser {
@@ -25,6 +37,12 @@ export class User extends BaseEntity implements IUser {
   @Column('decimal', { precision: 5, scale: 2, default: null })
   height: number;
 
+  @Column('decimal', { precision: 5, scale: 2, default: null })
+  weight: number;
+
+  @Column('decimal', { precision: 5, scale: 2, default: null })
+  clothing_size: number;
+
   @Column({ type: 'varchar', length: 255, name: 'first_name' })
   firstName: string;
 
@@ -39,10 +57,7 @@ export class User extends BaseEntity implements IUser {
   password: string;
 
   @Column({ type: 'varchar', length: 150, default: null, name: 'phone_number' })
-  phoneNumber: string;
-
-  @Column({ type: 'varchar', length: 150, default: null, name: 'alternate_phone_number' })
-  alternatePhoneNumber: string;
+  contact: string;
 
   @Column({ type: 'varchar', length: 100, default: null })
   etnia: string;
@@ -54,13 +69,40 @@ export class User extends BaseEntity implements IUser {
   shoes: string;
 
   @Column({ type: 'varchar', length: 255, default: null })
-  dress: string;
+  address: string;
 
   @Column({ type: 'varchar', length: 255, default: null })
   location: string;
 
   @Column({ type: 'varchar', length: 255, default: null, name: 'about_me' })
   aboutMe: string;
+
+  @Column({ type: 'varchar', length: 255, default: null })
+  footwear: string;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
+    default: null,
+    name: 'experience_modeling',
+  })
+  experienceModeling: string;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
+    default: null,
+    name: 'previous_clients',
+  })
+  previousClients: string;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
+    default: null,
+    name: 'previous_agencies',
+  })
+  previousAgencies: string;
 
   @Column({
     type: 'varchar',
@@ -70,20 +112,20 @@ export class User extends BaseEntity implements IUser {
   })
   pictureProfile: string;
 
-  @Column({ type: 'simple-array', default: null, name: 'social_media_network' })
-  socialMediaNetwork: string[];
-
   @Column({ type: 'boolean', default: false, name: 'registered_self_employed' })
   registeredSelfEmployed: boolean;
 
   @Column({ type: 'boolean', default: false, name: 'complete_register' })
   completeRegister: boolean;
 
-  @Column({ type: 'date', default: null, name: 'time_zone' })
-  timeZone: Date;
+  @Column({ type: 'boolean', default: false, name: 'availability_to_travel' })
+  availability_to_travel: boolean;
 
   @Column({ type: 'date', default: null })
-  birthday: Date;
+  birthdate: Date;
+
+  @Column({ type: 'enum', enum: CITIES })
+  city: CITIES;
 
   @Column({ type: 'enum', enum: USER_ROLES })
   userRole: USER_ROLES;
@@ -99,10 +141,20 @@ export class User extends BaseEntity implements IUser {
 
   @Column({ type: 'enum', enum: NATIONALITY, default: null })
   nationality: NATIONALITY;
-  
-  // pictures: manyToOne
 
-  // videos: manyToOne
+  // modelos a oneToMany
+  @OneToMany(()=> UserLanguage, (userLanguage)=> userLanguage.users)
+  userLanguage: UserLanguage[];
+
+  @Column({ name: 'types_of_modeling' })
+  typesOfModeling: string;
+
+  @Column({ name: 'social_media_network' })
+  socialMediaNetwork: string;
+
+  @Column({ name: 'weekly_hours' })
+  weeklyHours: string
+  //
 
   @BeforeInsert()
   async hashPassword() {
