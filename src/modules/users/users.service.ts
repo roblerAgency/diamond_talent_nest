@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto';
 
 // Entity
+import { TypesOfModeling } from '../typesOfModeling/entities/typesOfModeling.entity';
 import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
 import { User } from './entities/user.entity';
 
@@ -19,6 +20,7 @@ import {
   calculateAge,
   errorManagerParamCharacter,
 } from '../../../src/commons';
+import { WorkingDaysWeek } from '../workingDaysWeek/entities/workingDaysWeek.entity';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +28,10 @@ export class UsersService {
     @InjectRepository(User) private usersRepository: Repository<User>,
     @InjectRepository(UserLanguage)
     private userLanguageRepository: Repository<UserLanguage>,
+    @InjectRepository(TypesOfModeling)
+    private typeOfModelingRepository: Repository<TypesOfModeling>,
+    @InjectRepository(WorkingDaysWeek)
+    private workingDaysWeekRepository: Repository<WorkingDaysWeek>,
   ) {}
 
   async create(data: CreateUserDto): Promise<User> {
@@ -111,7 +117,7 @@ export class UsersService {
     }
   }
 
-  async getUserId({ id }: { id: number}): Promise<User> {
+  async getUserId({ id }: { id: number }): Promise<User> {
     try {
       errorManagerParamCharacter({ id });
       const user = await this.usersRepository.findOneBy({ id });
@@ -142,18 +148,46 @@ export class UsersService {
 
       if (body?.userLanguage) {
         const languagesItemsArray = await Promise.all(
-          body.userLanguage.map(async (item) => {
-            const languagesItem = this.userLanguageRepository.create({
+          body.userLanguage.map((item) =>
+            this.userLanguageRepository.create({
               users: user,
               languages: item,
-            });
-
-            return languagesItem;
-          }),
+            }),
+          ),
         );
 
         await this.userLanguageRepository.save(languagesItemsArray);
       }
+
+      if (body?.typesOfModeling) {
+        const typesOfModelingItemsArray = await Promise.all(
+          body.typesOfModeling.map((item) =>
+            this.typeOfModelingRepository.create({
+              users: user,
+              typesOfModeling: item,
+            }),
+          ),
+        );
+
+        await this.typeOfModelingRepository.save(typesOfModelingItemsArray);
+      }
+
+      if (body?.workingDaysWeek) {
+        const workingDaysWeekArray = await Promise.all(
+          body.workingDaysWeek.map((item) =>
+            this.workingDaysWeekRepository.create({
+              users: user,
+              workingDaysWeek: item,
+            }),
+          ),
+        );
+
+        await this.typeOfModelingRepository.save(workingDaysWeekArray);
+      }
+
+      delete body.workingDaysWeek;
+      delete body.userLanguage;
+      delete body.typesOfModeling;
 
       const updateUser = Object.assign(user, body);
       await this.usersRepository.update(id, updateUser);

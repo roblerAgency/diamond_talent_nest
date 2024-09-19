@@ -1,4 +1,10 @@
-import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 
@@ -11,10 +17,13 @@ import {
   NATIONALITY,
   BaseEntity,
   IUser,
-  CITIES
+  CITIES,
+  WEEKLY_HOURS,
 } from '../../../commons/';
 
 // Entities
+import { TypesOfModeling } from 'src/modules/typesOfModeling/entities/typesOfModeling.entity';
+import { WorkingDaysWeek } from 'src/modules/workingDaysWeek/entities/workingDaysWeek.entity';
 import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
 
 @Entity({ name: 'users' })
@@ -41,7 +50,10 @@ export class User extends BaseEntity implements IUser {
   weight: number;
 
   @Column('decimal', { precision: 5, scale: 2, default: null })
-  clothing_size: number;
+  clothingSize: number;
+
+  @Column({ type: 'bigint', default: null, name: 'contact' })
+  contact: number;
 
   @Column({ type: 'varchar', length: 255, name: 'first_name' })
   firstName: string;
@@ -55,9 +67,6 @@ export class User extends BaseEntity implements IUser {
   @Exclude()
   @Column({ type: 'varchar', length: 255 })
   password: string;
-
-  @Column({ type: 'varchar', length: 150, default: null, name: 'phone_number' })
-  contact: string;
 
   @Column({ type: 'varchar', length: 100, default: null })
   etnia: string;
@@ -74,31 +83,28 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'varchar', length: 255, default: null })
   location: string;
 
-  @Column({ type: 'varchar', length: 255, default: null, name: 'about_me' })
+  @Column({ type: 'text', default: null, name: 'about_me' })
   aboutMe: string;
 
   @Column({ type: 'varchar', length: 255, default: null })
   footwear: string;
 
   @Column({
-    type: 'varchar',
-    length: 255,
+    type: 'text',
     default: null,
     name: 'experience_modeling',
   })
   experienceModeling: string;
 
   @Column({
-    type: 'varchar',
-    length: 255,
+    type: 'text',
     default: null,
     name: 'previous_clients',
   })
   previousClients: string;
 
   @Column({
-    type: 'varchar',
-    length: 255,
+    type: 'text',
     default: null,
     name: 'previous_agencies',
   })
@@ -112,6 +118,14 @@ export class User extends BaseEntity implements IUser {
   })
   pictureProfile: string;
 
+  @Column({
+    type: 'varchar',
+    length: 255,
+    default: null,
+    name: 'social_media_network',
+  })
+  socialMediaNetwork: string;
+
   @Column({ type: 'boolean', default: false, name: 'registered_self_employed' })
   registeredSelfEmployed: boolean;
 
@@ -119,15 +133,15 @@ export class User extends BaseEntity implements IUser {
   completeRegister: boolean;
 
   @Column({ type: 'boolean', default: false, name: 'availability_to_travel' })
-  availability_to_travel: boolean;
+  availabilityToTravel: boolean;
 
-  @Column({ type: 'date', default: null })
+  @Column({ type: 'timestamp', default: null })
   birthdate: Date;
 
-  @Column({ type: 'enum', enum: CITIES })
+  @Column({ type: 'enum', enum: CITIES, default: null })
   city: CITIES;
 
-  @Column({ type: 'enum', enum: USER_ROLES })
+  @Column({ type: 'enum', enum: USER_ROLES, default: null })
   userRole: USER_ROLES;
 
   @Column({ type: 'enum', enum: ROLES, default: ROLES.USER })
@@ -142,20 +156,22 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'enum', enum: NATIONALITY, default: null })
   nationality: NATIONALITY;
 
-  // modelos a oneToMany
-  @OneToMany(()=> UserLanguage, (userLanguage)=> userLanguage.users)
+  @Column({
+    type: 'enum',
+    enum: WEEKLY_HOURS,
+    default: null,
+    name: 'weekly_hours',
+  })
+  weeklyHours: WEEKLY_HOURS;
+
+  @OneToMany(() => WorkingDaysWeek, (workingDaysWeek) => workingDaysWeek.users)
+  workingDaysWeek: WorkingDaysWeek;
+
+  @OneToMany(() => UserLanguage, (userLanguage) => userLanguage.users)
   userLanguage: UserLanguage[];
 
-  // @Column({ name: 'types_of_modeling' })
-  // typesOfModeling: string;
-
-  // @Column({ name: 'social_media_network' })
-  // socialMediaNetwork: string;
-
-  // @Column({ name: 'weekly_hours' })
-  // weeklyHours: string
-  //
-  // modelos a oneToMany
+  @OneToMany(() => TypesOfModeling, (typesOfModeling) => typesOfModeling.users)
+  typesOfModeling: TypesOfModeling[];
 
   @BeforeInsert()
   async hashPassword() {

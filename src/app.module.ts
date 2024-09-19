@@ -6,6 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth/services/auth/auth.service';
 
 // Module
+import { WorkingDaysWeekModule } from './modules/workingDaysWeek/workingDaysWeek.module';
+import { TypesOfModelingModule } from './modules/typesOfModeling/typesOfModeling.module';
 import { UserLanguageModule } from './modules/userLanguage/userLanguage.module';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
@@ -29,6 +31,8 @@ import config from '../config/config';
     AuthModule,
     JwtModule,
     UserLanguageModule,
+    TypesOfModelingModule,
+    WorkingDaysWeekModule,
   ],
   controllers: [],
   providers: [AuthService],

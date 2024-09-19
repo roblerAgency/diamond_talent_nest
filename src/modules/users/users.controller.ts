@@ -90,7 +90,8 @@ export class UsersController {
     return this.usersService.getUserId({ id });
   }
 
-  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
+  @IsPublic()
+  // @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
   @Patch(':id')
   editUser(@Param('id', ParseIntPipe) id: number, @Body() body): Promise<User> {
     return this.usersService.editUser({ id, body });
