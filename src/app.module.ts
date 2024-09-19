@@ -1,20 +1,20 @@
-import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
 // Services
 import { AuthService } from './auth/services/auth/auth.service';
 
 // Module
-import { UserLanguageModule } from './userLanguage/userLanguage.module';
+import { UserLanguageModule } from './modules/userLanguage/userLanguage.module';
 import { DatabaseModule } from './database/database.module';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './auth/auth.module';
 
-// Const
+// Configs
+import { configSchema } from '../config/validationSchema';
 import { enviroments } from '../enviroments';
 import config from '../config/config';
-import { configSchema } from '../config/validationSchema';
 
 @Module({
   imports: [

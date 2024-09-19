@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, In, Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
 // DTO'S
 import { CreateUserDto } from './dto';
 
 // Entity
+import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
 import { User } from './entities/user.entity';
 
 // Commons
@@ -16,11 +17,8 @@ import {
   ROLES,
   USER_ROLES,
   calculateAge,
-  errorManagerParamCharacter
-} from '../../src/commons';
-
-// Entity
-import { UserLanguage } from 'src/userLanguage/entities/userLanguage.entity';
+  errorManagerParamCharacter,
+} from '../../../src/commons';
 
 @Injectable()
 export class UsersService {
@@ -30,7 +28,7 @@ export class UsersService {
     private userLanguageRepository: Repository<UserLanguage>,
   ) {}
 
-  async create(data: CreateUserDto) {
+  async create(data: CreateUserDto): Promise<User> {
     try {
       const user = await this.findByEmail({ email: data.email });
 
@@ -56,7 +54,7 @@ export class UsersService {
     queries,
   }: {
     queries: { limit: number; page: number; search: any };
-  }) {
+  }): Promise<{ users: User[]; count: number }> {
     try {
       const { search, page = 1, limit = 10 } = queries;
 
@@ -88,7 +86,7 @@ export class UsersService {
           { lastName: ILike(`%${search}%`) },
           { email: ILike(`%${search}%`) },
           { location: ILike(`%${search}%`) },
-          { dress: ILike(`%${search}%`) },
+          { address: ILike(`%${search}%`) },
           { gender: In(matchingGenders) },
           { nationality: In(matchingNationalities) },
           { role: In(matchingRoles) },
@@ -113,7 +111,7 @@ export class UsersService {
     }
   }
 
-  async getUserId({ id }): Promise<User> {
+  async getUserId({ id }: { id: number}): Promise<User> {
     try {
       errorManagerParamCharacter({ id });
       const user = await this.usersRepository.findOneBy({ id });
@@ -166,7 +164,11 @@ export class UsersService {
     }
   }
 
-  findByEmail({ email }: { email: string }): Promise<User> {
-    return this.usersRepository.findOne({ where: { email } });
+  async findByEmail({ email }: { email: string }): Promise<User> {
+    try {
+      return await this.usersRepository.findOne({ where: { email } });
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
   }
 }

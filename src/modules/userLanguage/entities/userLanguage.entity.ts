@@ -1,10 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 // Commons
-import { BaseEntity, LANGUAGES } from '../../commons/';
+import { BaseEntity, LANGUAGES } from '../../../commons/';
 
 // Entities
-import { User } from 'src/users/entities/user.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 @Entity({ name: 'language_users' })
 export class UserLanguage extends BaseEntity {

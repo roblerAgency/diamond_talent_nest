@@ -12,10 +12,10 @@ import {
   BaseEntity,
   IUser,
   CITIES
-} from '../../commons/';
+} from '../../../commons/';
 
 // Entities
-import { UserLanguage } from 'src/userLanguage/entities/userLanguage.entity';
+import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity implements IUser {
@@ -146,15 +146,16 @@ export class User extends BaseEntity implements IUser {
   @OneToMany(()=> UserLanguage, (userLanguage)=> userLanguage.users)
   userLanguage: UserLanguage[];
 
-  @Column({ name: 'types_of_modeling' })
-  typesOfModeling: string;
+  // @Column({ name: 'types_of_modeling' })
+  // typesOfModeling: string;
 
-  @Column({ name: 'social_media_network' })
-  socialMediaNetwork: string;
+  // @Column({ name: 'social_media_network' })
+  // socialMediaNetwork: string;
 
-  @Column({ name: 'weekly_hours' })
-  weeklyHours: string
+  // @Column({ name: 'weekly_hours' })
+  // weeklyHours: string
   //
+  // modelos a oneToMany
 
   @BeforeInsert()
   async hashPassword() {
