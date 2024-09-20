@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 // Commons
+import { capitalizeWords, ErrorManager } from 'src/commons';
 
-import { ErrorManager } from 'src/commons';
 // Entities
 import { TypeOfEventCategory } from './entities/typeOfEventCategory.entities';
 
@@ -28,7 +28,10 @@ export class TypeOfEventCategoryService {
         });
       }
 
-      const event = await this.eventCategoryRepository.save(body)
+      const category = capitalizeWords({ words: body?.category })
+      const updateCategory = Object.assign(category, body);
+
+      const event = await this.eventCategoryRepository.save(updateCategory)
       return event
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);

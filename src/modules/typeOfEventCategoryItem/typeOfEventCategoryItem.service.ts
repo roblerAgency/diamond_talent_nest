@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 // Commons
-import { ErrorManager } from 'src/commons';
+import { capitalizeWords, ErrorManager } from 'src/commons';
 
 // Entities
 import { TypeOfEventCategoryItem } from './entities/typeOfEventCategoryItem.entity';
@@ -42,16 +42,17 @@ export class TypeOfEventCategoryItemService {
 
       const typeOfEventCategoryFound =
         await this.typeOfEventCategoryService.getEventCategoryById({
-          id: user?.sub,
+          id: body.categoryId,
         });
       const userFound = await this.userService.getUserId({ id: user?.sub });
 
-      this.eventCategoryItemsRepository.create({
+      const categoryItem = this.eventCategoryItemsRepository.create({
         user: userFound,
         item: body?.item,
         typeOfEventCategory: typeOfEventCategoryFound,
       });
 
+      await this.eventCategoryItemsRepository.save(categoryItem)
       return body;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);

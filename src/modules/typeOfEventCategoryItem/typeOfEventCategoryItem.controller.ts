@@ -25,7 +25,6 @@ export class TypeOfEventCategoryItemController {
 
     @Post()
     async create(@Body() body, @Req() req) {
-        console.log({ req: req.user })
         return this.categoryItems.create({ body, user: req.user })
     }
 }
