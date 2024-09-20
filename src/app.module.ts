@@ -6,6 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth/services/auth/auth.service';
 
 // Module
+import { TypeOfEventCategoryItemModule } from './modules/typeOfEventCategoryItem/typeOfEventCategoryItem.module';
+import { TypeOfEventCategoryModule } from './modules/typeOfEventCategory/typeOfEventCategory.module';
 import { WorkingDaysWeekModule } from './modules/workingDaysWeek/workingDaysWeek.module';
 import { TypesOfModelingModule } from './modules/typesOfModeling/typesOfModeling.module';
 import { UserLanguageModule } from './modules/userLanguage/userLanguage.module';
@@ -33,6 +35,8 @@ import config from '../config/config';
     UserLanguageModule,
     TypesOfModelingModule,
     WorkingDaysWeekModule,
+    TypeOfEventCategoryModule,
+    TypeOfEventCategoryItemModule,
   ],
   controllers: [],
   providers: [AuthService],

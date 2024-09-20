@@ -2,6 +2,7 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -19,13 +20,14 @@ import {
   IUser,
   CITIES,
   WEEKLY_HOURS,
-  COUNTRY
+  COUNTRY,
 } from '../../../commons/';
 
 // Entities
 import { TypesOfModeling } from 'src/modules/typesOfModeling/entities/typesOfModeling.entity';
 import { WorkingDaysWeek } from 'src/modules/workingDaysWeek/entities/workingDaysWeek.entity';
 import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
+import { TypeOfEventCategoryItem } from 'src/modules/typeOfEventCategoryItem/entities/typeOfEventCategoryItem.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity implements IUser {
@@ -158,7 +160,7 @@ export class User extends BaseEntity implements IUser {
   nationality: NATIONALITY;
 
   @Column({ type: 'enum', enum: COUNTRY, default: null })
-  country: COUNTRY
+  country: COUNTRY;
 
   @Column({
     type: 'enum',
@@ -176,6 +178,12 @@ export class User extends BaseEntity implements IUser {
 
   @OneToMany(() => TypesOfModeling, (typesOfModeling) => typesOfModeling.users)
   typesOfModeling: TypesOfModeling[];
+
+  @ManyToMany(
+    () => TypeOfEventCategoryItem,
+    (typeOfEventCategoryItem) => typeOfEventCategoryItem.user,
+  )
+  typeOfEventCategoryItem: TypeOfEventCategoryItem;
 
   @BeforeInsert()
   async hashPassword() {
