@@ -12,6 +12,12 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 // Commons
 import { ResponseInterceptor, ROLES } from 'src/commons';
 
+// Dtos
+import { CreateTypeOfEventCategory } from './dto'
+
+// Entities
+import { TypeOfEventCategory } from './entities/typeOfEventCategory.entities';
+
 @ApiTags('Event Category')
 @Controller('eventCategory')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -23,13 +29,13 @@ export class TypeOfEventCategoryController {
 
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
   @Post()
-  createEventCategory(@Body() body) {
+  createEventCategory(@Body() body: CreateTypeOfEventCategory): Promise<TypeOfEventCategory> {
     return this.eventCategoryServices.createEventCategory({ body });
   }
 
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
   @Get(':id')
-  getEventCategoryById(@Param('id', ParseIntPipe) id: number) {
+  getEventCategoryById(@Param('id', ParseIntPipe) id: number): Promise<TypeOfEventCategory> {
     return this.eventCategoryServices.getEventCategoryById({ id })
   }
 }

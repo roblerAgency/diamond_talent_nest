@@ -8,14 +8,21 @@ import {
 } from 'typeorm';
 
 // Commons
-import { BaseEntity, ITEM_CATEGORIES } from '../../../commons/';
+import {
+  BaseEntity,
+  ITypeOfEventCategoryItem,
+  ITEM_CATEGORIES,
+} from '../../../commons/';
 
 // Entities
 import { TypeOfEventCategory } from '../../typeOfEventCategory/entities/typeOfEventCategory.entities';
 import { User } from 'src/modules/users/entities/user.entity';
 
 @Entity({ name: 'event_category_item' })
-export class TypeOfEventCategoryItem extends BaseEntity {
+export class TypeOfEventCategoryItem
+  extends BaseEntity
+  implements ITypeOfEventCategoryItem
+{
   @PrimaryGeneratedColumn()
   id: number;
 
