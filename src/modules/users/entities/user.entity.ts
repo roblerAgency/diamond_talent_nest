@@ -19,6 +19,7 @@ import {
   IUser,
   CITIES,
   WEEKLY_HOURS,
+  COUNTRY
 } from '../../../commons/';
 
 // Entities
@@ -155,6 +156,9 @@ export class User extends BaseEntity implements IUser {
 
   @Column({ type: 'enum', enum: NATIONALITY, default: null })
   nationality: NATIONALITY;
+
+  @Column({ type: 'enum', enum: COUNTRY, default: null })
+  country: COUNTRY
 
   @Column({
     type: 'enum',
