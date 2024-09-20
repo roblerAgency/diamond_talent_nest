@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 // Commons
-import { ErrorManager } from 'src/commons';
+import { ErrorManager, reqUser } from 'src/commons';
 
 // Entities
 import { TypeOfEventCategoryItem } from './entities/typeOfEventCategoryItem.entity';
@@ -11,6 +11,9 @@ import { TypeOfEventCategoryItem } from './entities/typeOfEventCategoryItem.enti
 // Services
 import { TypeOfEventCategoryService } from '../typeOfEventCategory/typeOfEventCategory.service';
 import { UsersService } from '../users/users.service';
+
+// Dtos
+import { CreateItemEventDto } from './dto';
 
 @Injectable()
 export class TypeOfEventCategoryItemService {
@@ -21,7 +24,7 @@ export class TypeOfEventCategoryItemService {
     private readonly userService: UsersService,
   ) {}
 
-  async getAll() {
+  async getAllItemsEvent(): Promise<TypeOfEventCategoryItem[]> {
     try {
       return this.eventCategoryItemsRepository.find();
     } catch (error) {
@@ -29,9 +32,17 @@ export class TypeOfEventCategoryItemService {
     }
   }
 
-  async create({ body, user }) {
+  async createItemEvent({
+    body,
+    user,
+  }: {
+    body: CreateItemEventDto;
+    user: reqUser;
+  }): Promise<TypeOfEventCategoryItem> {
     try {
-      const item = await this.getCategoryItemByItem({ item: body?.item });
+      const item: TypeOfEventCategoryItem = await this.getCategoryItemByItem({
+        item: body?.item,
+      });
 
       if (item) {
         throw new ErrorManager({
@@ -42,23 +53,24 @@ export class TypeOfEventCategoryItemService {
 
       const typeOfEventCategoryFound =
         await this.typeOfEventCategoryService.getEventCategoryById({
-          id: user?.sub,
+          id: body.categoryId,
         });
       const userFound = await this.userService.getUserId({ id: user?.sub });
 
-      this.eventCategoryItemsRepository.create({
+      const categoryItem = this.eventCategoryItemsRepository.create({
         user: userFound,
         item: body?.item,
         typeOfEventCategory: typeOfEventCategoryFound,
       });
 
+      await this.eventCategoryItemsRepository.save(categoryItem);
       return body;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
   }
 
-  async getCategoryItemByItem({ item }) {
+  async getCategoryItemByItem({ item }): Promise<TypeOfEventCategoryItem> {
     try {
       return await this.eventCategoryItemsRepository.findOneBy({ item });
     } catch (error) {

@@ -1,13 +1,12 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 // Commons
-import { BaseEntity, TYPE_OF_EVENT_CATEGORY } from '../../../commons/';
+import { BaseEntity, TYPE_OF_EVENT_CATEGORY, ITypeOfEventCategory } from '../../../commons/';
 
 // Entities
 import { TypeOfEventCategoryItem } from '../../typeOfEventCategoryItem/entities/typeOfEventCategoryItem.entity';
-
 @Entity({ name: 'event_category' })
-export class TypeOfEventCategory extends BaseEntity {
+export class TypeOfEventCategory extends BaseEntity implements ITypeOfEventCategory {
   @PrimaryGeneratedColumn()
   id: number;
 

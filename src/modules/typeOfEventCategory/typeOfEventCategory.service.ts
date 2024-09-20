@@ -3,10 +3,17 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 // Commons
+import {
+  capitalizeWords,
+  ErrorManager,
+  TYPE_OF_EVENT_CATEGORY,
+} from 'src/commons';
 
-import { ErrorManager } from 'src/commons';
 // Entities
 import { TypeOfEventCategory } from './entities/typeOfEventCategory.entities';
+
+// Dtos
+import { CreateTypeOfEventCategory } from './dto';
 
 @Injectable()
 export class TypeOfEventCategoryService {
@@ -15,12 +22,17 @@ export class TypeOfEventCategoryService {
     private eventCategoryRepository: Repository<TypeOfEventCategory>,
   ) {}
 
-  async createEventCategory({ body }) {
+  async createEventCategory({
+    body,
+  }: {
+    body: CreateTypeOfEventCategory;
+  }): Promise<TypeOfEventCategory> {
     try {
-      const categoryFound = await this.getEventCategoryByName({
-        category: body?.category,
-      });
-      
+      const categoryFound: TypeOfEventCategory =
+        await this.getEventCategoryByName({
+          category: body?.category,
+        });
+
       if (categoryFound) {
         throw new ErrorManager({
           type: 'NOT_FOUND',
@@ -28,18 +40,26 @@ export class TypeOfEventCategoryService {
         });
       }
 
-      const event = await this.eventCategoryRepository.save(body)
-      return event
+      const category = capitalizeWords({ words: body?.category });
+      const updateCategory = Object.assign(category, body);
+
+      const event = await this.eventCategoryRepository.save(updateCategory);
+      return event;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
   }
 
-  async getEventCategoryById({ id }) {
+  async getEventCategoryById({
+    id,
+  }: {
+    id: number;
+  }): Promise<TypeOfEventCategory> {
     try {
-      const eventCategory = await this.eventCategoryRepository.findOneBy({
-        id,
-      });
+      const eventCategory: TypeOfEventCategory =
+        await this.eventCategoryRepository.findOneBy({
+          id,
+        });
       if (!eventCategory) {
         throw new ErrorManager({
           type: 'NOT_FOUND',
@@ -52,7 +72,11 @@ export class TypeOfEventCategoryService {
     }
   }
 
-  async getEventCategoryByName({ category }) {
+  async getEventCategoryByName({
+    category,
+  }: {
+    category: TYPE_OF_EVENT_CATEGORY;
+  }): Promise<TypeOfEventCategory> {
     try {
       return this.eventCategoryRepository.findOneBy({ category });
     } catch (error) {
