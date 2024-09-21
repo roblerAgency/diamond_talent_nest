@@ -50,6 +50,14 @@ export class TypeOfEventCategoryService {
     }
   }
 
+  async getAllEvents(): Promise<TypeOfEventCategory[]> {
+    try {
+      return this.eventCategoryRepository.find()
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
+  }
+
   async getEventCategoryById({
     id,
   }: {

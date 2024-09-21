@@ -53,9 +53,12 @@ export class User extends BaseEntity implements IUser {
   weight: number;
 
   @Column('decimal', { precision: 5, scale: 2, default: null })
+  extent: number
+
+  @Column('decimal', { precision: 5, scale: 2, default: null, name: 'clothing_size' })
   clothingSize: number;
 
-  @Column({ type: 'bigint', default: null, name: 'contact' })
+  @Column({ type: 'bigint', default: null })
   contact: number;
 
   @Column({ type: 'varchar', length: 255, name: 'first_name' })
@@ -129,6 +132,42 @@ export class User extends BaseEntity implements IUser {
   })
   socialMediaNetwork: string;
 
+  @Column({
+    type: 'text',
+    default: null,
+    name: 'customer_services_skills',
+  })
+  customerServiceSkills: string
+
+  @Column({
+    type: 'text',
+    default: null,
+    name: 'knowledge_of_protocols_and_procedures',
+  })
+  knowledgeOfProtocolsAndProcedures: string
+
+  @Column({
+    type: 'text',
+    default: null,
+    name: 'customer_testimonials_or_recommendations',
+  })
+  customerTestimonialsOrRecommendations: string
+
+  @Column({
+    type: 'text',
+    default: null,
+    name: 'reference_contacts_in_the_industry',
+  })
+  referenceContactsInTheIndustry: string
+
+  @Column({
+    type: 'varchar',
+    length: '255',
+    default: null,
+    name: 'photographs_of_previous_works',
+  })
+  photographsOfPreviousWorks: string
+
   @Column({ type: 'boolean', default: false, name: 'registered_self_employed' })
   registeredSelfEmployed: boolean;
 
@@ -144,7 +183,7 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'enum', enum: CITIES, default: null })
   city: CITIES;
 
-  @Column({ type: 'enum', enum: USER_ROLES, default: null })
+  @Column({ type: 'enum', enum: USER_ROLES, default: null, name: 'user_role' })
   userRole: USER_ROLES;
 
   @Column({ type: 'enum', enum: ROLES, default: ROLES.USER })

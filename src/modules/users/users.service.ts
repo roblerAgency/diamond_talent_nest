@@ -185,6 +185,10 @@ export class UsersService {
         await this.typeOfModelingRepository.save(workingDaysWeekArray);
       }
 
+
+      console.log({ body })
+
+      delete body.typesOfEvents
       delete body.workingDaysWeek;
       delete body.userLanguage;
       delete body.typesOfModeling;

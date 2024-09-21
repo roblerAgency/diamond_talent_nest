@@ -94,6 +94,8 @@ export class UsersController {
   // @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
   @Patch(':id')
   editUser(@Param('id', ParseIntPipe) id: number, @Body() body): Promise<User> {
+
+    console.log({ body })
     return this.usersService.editUser({ id, body });
   }
 }

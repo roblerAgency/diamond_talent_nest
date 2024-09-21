@@ -33,7 +33,13 @@ export class TypeOfEventCategoryController {
     return this.eventCategoryServices.createEventCategory({ body });
   }
 
-  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
+  @Get()
+  getAllEvents(): Promise<TypeOfEventCategory[]> {
+    return this.eventCategoryServices.getAllEvents()
+  }
+
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Get(':id')
   getEventCategoryById(@Param('id', ParseIntPipe) id: number): Promise<TypeOfEventCategory> {
     return this.eventCategoryServices.getEventCategoryById({ id })

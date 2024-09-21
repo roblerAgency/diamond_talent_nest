@@ -26,7 +26,9 @@ export class TypeOfEventCategoryItemService {
 
   async getAllItemsEvent(): Promise<TypeOfEventCategoryItem[]> {
     try {
-      return this.eventCategoryItemsRepository.find();
+      return this.eventCategoryItemsRepository.find({
+        relations: ['user', 'typeOfEventCategory'],
+      });
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
