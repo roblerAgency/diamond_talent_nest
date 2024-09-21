@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -41,5 +42,6 @@ export class TypeOfEventCategoryItem
   typeOfEventCategory: TypeOfEventCategory;
 
   @ManyToMany(() => User, (user) => user.typeOfEventCategoryItem)
+  @JoinTable({ name: 'user_id' })
   user: User;
 }
