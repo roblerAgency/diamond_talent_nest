@@ -6,6 +6,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto';
 
 // Entity
+import { TypeOfEventCategoryItem } from '../typeOfEventCategoryItem/entities/typeOfEventCategoryItem.entity';
+import { TypeOfEventCategory } from '../typeOfEventCategory/entities/typeOfEventCategory.entities';
 import { TypesOfModeling } from '../typesOfModeling/entities/typesOfModeling.entity';
 import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
 import { User } from './entities/user.entity';
@@ -14,6 +16,7 @@ import { User } from './entities/user.entity';
 import {
   ErrorManager,
   GENDER,
+  ITEM_CATEGORIES,
   NATIONALITY,
   ROLES,
   USER_ROLES,
@@ -32,6 +35,10 @@ export class UsersService {
     private typeOfModelingRepository: Repository<TypesOfModeling>,
     @InjectRepository(WorkingDaysWeek)
     private workingDaysWeekRepository: Repository<WorkingDaysWeek>,
+    @InjectRepository(TypeOfEventCategoryItem)
+    private typeOfEventCategoryItemRepository: Repository<TypeOfEventCategoryItem>,
+    @InjectRepository(TypeOfEventCategory)
+    private typeOfEventCategoryRepository: Repository<TypeOfEventCategory>,
   ) {}
 
   async create(data: CreateUserDto): Promise<User> {
@@ -185,10 +192,27 @@ export class UsersService {
         await this.typeOfModelingRepository.save(workingDaysWeekArray);
       }
 
+      if (body?.typesOfEvents) {
+        await Promise.all(
+          body?.typesOfEvents.map(async (item) => {
+            const events = await this.typeOfEventCategoryRepository.findOneBy({
+              category: item.type_of_event
+            })
+            
+            const eventsItems = this.typeOfEventCategoryItemRepository.create({
+              item: item.event_item,
+              typeOfEventCategory: events,
+              user: user
+            })
+            
+            console.log({ eventsItems })
+            await this.typeOfEventCategoryItemRepository.save(eventsItems)
+          })
+        );
 
-      console.log({ body })
+      }
 
-      delete body.typesOfEvents
+      delete body.typesOfEvents;
       delete body.workingDaysWeek;
       delete body.userLanguage;
       delete body.typesOfModeling;
@@ -210,3 +234,8 @@ export class UsersService {
     }
   }
 }
+
+// this.typeOfModelingRepository.create({
+//   users: user,
+//   typesOfModeling: item,
+// }),
