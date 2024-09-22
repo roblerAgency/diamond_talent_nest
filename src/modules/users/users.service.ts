@@ -9,6 +9,7 @@ import { CreateUserDto } from './dto';
 import { TypeOfEventCategoryItem } from '../typeOfEventCategoryItem/entities/typeOfEventCategoryItem.entity';
 import { TypeOfEventCategory } from '../typeOfEventCategory/entities/typeOfEventCategory.entities';
 import { TypesOfModeling } from '../typesOfModeling/entities/typesOfModeling.entity';
+import { WorkingDaysWeek } from '../workingDaysWeek/entities/workingDaysWeek.entity';
 import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
 import { User } from './entities/user.entity';
 
@@ -16,14 +17,12 @@ import { User } from './entities/user.entity';
 import {
   ErrorManager,
   GENDER,
-  ITEM_CATEGORIES,
   NATIONALITY,
   ROLES,
   USER_ROLES,
   calculateAge,
   errorManagerParamCharacter,
 } from '../../../src/commons';
-import { WorkingDaysWeek } from '../workingDaysWeek/entities/workingDaysWeek.entity';
 
 @Injectable()
 export class UsersService {
@@ -196,26 +195,24 @@ export class UsersService {
         await Promise.all(
           body?.typesOfEvents.map(async (item) => {
             const events = await this.typeOfEventCategoryRepository.findOneBy({
-              category: item.type_of_event
-            })
-            
+              category: item.type_of_event,
+            });
+
             const eventsItems = this.typeOfEventCategoryItemRepository.create({
               item: item.event_item,
               typeOfEventCategory: events,
-              user: user
-            })
-            
-            console.log({ eventsItems })
-            await this.typeOfEventCategoryItemRepository.save(eventsItems)
-          })
-        );
+              user: user,
+            });
 
+            await this.typeOfEventCategoryItemRepository.save(eventsItems);
+          }),
+        );
       }
 
-      delete body.typesOfEvents;
-      delete body.workingDaysWeek;
-      delete body.userLanguage;
       delete body.typesOfModeling;
+      delete body.workingDaysWeek;
+      delete body.typesOfEvents;
+      delete body.userLanguage;
 
       const updateUser = Object.assign(user, body);
       await this.usersRepository.update(id, updateUser);
@@ -234,8 +231,3 @@ export class UsersService {
     }
   }
 }
-
-// this.typeOfModelingRepository.create({
-//   users: user,
-//   typesOfModeling: item,
-// }),
