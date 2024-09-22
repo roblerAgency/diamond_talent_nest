@@ -10,19 +10,13 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 // Services
 import { UsersService } from './users.service';
 
 // DTO'S
-import { CreateUserDto, ResponseCreateUserDto } from './dto';
+import { CreateUserDto } from './dto';
 
 // Guards
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -47,35 +41,12 @@ import { User } from './entities/user.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Create user.',
-    description: 'this endpoint is for create a user.',
-  })
-  @ApiBody({
-    type: CreateUserDto,
-    description: 'The fields to be created.',
-  })
-  @ApiResponse({
-    status: 201,
-    type: () => ResponseCreateUserDto,
-    description: 'create user successfully.',
-  })
   @IsPublic()
   @Post()
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
 
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Get all users.',
-    description: 'this endpoint is get all users.',
-  })
-  @ApiBody({
-    type: CreateUserDto,
-    description: 'The fields to be list users.',
-  })
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
   @Get()
   getAllUsers(
@@ -91,11 +62,10 @@ export class UsersController {
   }
 
   @IsPublic()
-  // @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Patch(':id')
   editUser(@Param('id', ParseIntPipe) id: number, @Body() body): Promise<User> {
-
-    console.log({ body })
+    console.log({ body });
     return this.usersService.editUser({ id, body });
   }
 }
