@@ -111,10 +111,12 @@ export class UsersService {
             where: whereConditions,
             skip: (page - 1) * limit,
             take: limit,
+            relations: ['userLanguage'],
           })
         : await this.usersRepository.findAndCount({
             skip: (page - 1) * limit,
             take: limit,
+            relations: ['userLanguage'],
           });
 
       return { users, count };
@@ -126,7 +128,12 @@ export class UsersService {
   async getUserId({ id }: { id: number }): Promise<User> {
     try {
       errorManagerParamCharacter({ id });
-      const user = await this.usersRepository.findOneBy({ id });
+      const user = await this.usersRepository.findOne({
+        where: {
+          id: id,
+        },
+        relations: ['userLanguage'],
+      });
 
       if (!user) {
         throw new ErrorManager({
@@ -151,10 +158,16 @@ export class UsersService {
       }
 
       const user = await this.getUserId({ id });
-
+      
       if (body?.userLanguage) {
+        const userLanguages: UserLanguage[] = user?.userLanguage || [];
+
+        const filteredLanguages = body?.userLanguage?.filter(newLang =>
+          !userLanguages.some(existingLang => existingLang.languages === newLang)
+        ) || [];
+
         const languagesItemsArray = await Promise.all(
-          body.userLanguage.map((item) =>
+          filteredLanguages.map((item) =>
             this.userLanguageRepository.create({
               users: user,
               languages: item,
@@ -198,13 +211,13 @@ export class UsersService {
               category: item.type_of_event,
             });
 
-            const eventsItems = this.typeOfEventCategoryItemRepository.create({
-              item: item.event_item,
-              typeOfEventCategory: events,
-              user: user,
-            });
+            const eventsItems =
+              await this.typeOfEventCategoryItemRepository.findOneBy({
+                item: item.event_item,
+              });
 
-            await this.typeOfEventCategoryItemRepository.save(eventsItems);
+            eventsItems.typeOfEventCategory = events;
+            eventsItems.user = user;
           }),
         );
       }

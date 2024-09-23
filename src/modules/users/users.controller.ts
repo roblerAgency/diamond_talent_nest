@@ -55,17 +55,15 @@ export class UsersController {
     return this.usersService.getAllUsers({ queries });
   }
 
-  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Get(':id')
   getIdUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.getUserId({ id });
   }
 
-  @IsPublic()
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Patch(':id')
   editUser(@Param('id', ParseIntPipe) id: number, @Body() body): Promise<User> {
-    console.log({ body });
     return this.usersService.editUser({ id, body });
   }
 }
