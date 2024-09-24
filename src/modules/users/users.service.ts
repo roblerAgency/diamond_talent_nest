@@ -15,6 +15,7 @@ import { User } from './entities/user.entity';
 
 // Commons
 import {
+  ARCHIVE_OR_ACTIVE_USER,
   ErrorManager,
   GENDER,
   NATIONALITY,
@@ -71,8 +72,17 @@ export class UsersService {
       const { search, page = 1, limit = 10 } = queries;
 
       let whereConditions = [];
+      let archive: boolean | undefined;
 
       if (search) {
+
+        // search for users archives or not
+        if (search.toLowerCase().includes(ARCHIVE_OR_ACTIVE_USER.ARCHIVED)) {
+          archive = true;
+        } else if (search.toLowerCase().includes(ARCHIVE_OR_ACTIVE_USER.ACTIVED)) {
+          archive = false;
+        }
+
         // search for GENDER
         const matchingGenders = Object.values(GENDER).filter((gender) =>
           gender.toLowerCase().includes(search),
@@ -104,6 +114,10 @@ export class UsersService {
           { role: In(matchingRoles) },
           { userRole: In(matchingUserRoles) },
         ];
+
+        if (archive !== undefined) {
+          whereConditions.push({ archive });
+        }
       }
 
       const [users, count] = whereConditions.length
@@ -159,24 +173,24 @@ export class UsersService {
 
       const user = await this.getUserId({ id });
       
-      if (body?.userLanguage) {
-        const userLanguages: UserLanguage[] = user?.userLanguage || [];
+      // if (body?.userLanguage) {
+      //   const userLanguages: UserLanguage[] = user?.userLanguage || [];
 
-        const filteredLanguages = body?.userLanguage?.filter(newLang =>
-          !userLanguages.some(existingLang => existingLang.languages === newLang)
-        ) || [];
+      //   const filteredLanguages = body?.userLanguage?.filter(newLang =>
+      //     !userLanguages.some(existingLang => existingLang.languages === newLang)
+      //   ) || [];
 
-        const languagesItemsArray = await Promise.all(
-          filteredLanguages.map((item) =>
-            this.userLanguageRepository.create({
-              users: user,
-              languages: item,
-            }),
-          ),
-        );
+      //   const languagesItemsArray = await Promise.all(
+      //     filteredLanguages.map((item) =>
+      //       this.userLanguageRepository.create({
+      //         users: user,
+      //         languages: item,
+      //       }),
+      //     ),
+      //   );
 
-        await this.userLanguageRepository.save(languagesItemsArray);
-      }
+      //   await this.userLanguageRepository.save(languagesItemsArray);
+      // }
 
       if (body?.typesOfModeling) {
         const typesOfModelingItemsArray = await Promise.all(
@@ -222,10 +236,10 @@ export class UsersService {
         );
       }
 
+      delete body.userLanguage;
       delete body.typesOfModeling;
       delete body.workingDaysWeek;
       delete body.typesOfEvents;
-      delete body.userLanguage;
 
       const updateUser = Object.assign(user, body);
       await this.usersRepository.update(id, updateUser);

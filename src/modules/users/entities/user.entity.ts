@@ -21,6 +21,7 @@ import {
   CITIES,
   WEEKLY_HOURS,
   COUNTRY,
+  STATUS_ACCOUNT
 } from '../../../commons/';
 
 // Entities
@@ -177,6 +178,9 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'boolean', default: false, name: 'availability_to_travel' })
   availabilityToTravel: boolean;
 
+  @Column({ type: 'boolean', default: false })
+  archive: boolean;
+
   @Column({ type: 'timestamp', default: null })
   birthdate: Date;
 
@@ -200,6 +204,9 @@ export class User extends BaseEntity implements IUser {
 
   @Column({ type: 'enum', enum: COUNTRY, default: null })
   country: COUNTRY;
+
+  @Column({ type: 'enum', enum: STATUS_ACCOUNT, default: STATUS_ACCOUNT.PENDING })
+  verify: STATUS_ACCOUNT;
 
   @Column({
     type: 'enum',
