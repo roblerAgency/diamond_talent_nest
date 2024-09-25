@@ -75,11 +75,12 @@ export class UsersService {
       let archive: boolean | undefined;
 
       if (search) {
-
         // search for users archives or not
         if (search.toLowerCase().includes(ARCHIVE_OR_ACTIVE_USER.ARCHIVED)) {
           archive = true;
-        } else if (search.toLowerCase().includes(ARCHIVE_OR_ACTIVE_USER.ACTIVED)) {
+        } else if (
+          search.toLowerCase().includes(ARCHIVE_OR_ACTIVE_USER.ACTIVED)
+        ) {
           archive = false;
         }
 
@@ -172,7 +173,7 @@ export class UsersService {
       }
 
       const user = await this.getUserId({ id });
-      
+
       // if (body?.userLanguage) {
       //   const userLanguages: UserLanguage[] = user?.userLanguage || [];
 
@@ -245,6 +246,24 @@ export class UsersService {
       await this.usersRepository.update(id, updateUser);
 
       return updateUser;
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
+  }
+
+  async softDeleteUser({ id }: { id: number }): Promise<User> {
+    try {
+      const user: User = await this.getUserId({ id });
+
+      if (user?.archive) {
+        await this.usersRepository.softDelete(id);
+        return user;
+      } else {
+        throw new ErrorManager({
+          type: 'CONFLICT',
+          message: `The user with the id ${id} is not archived, to be able to delete the user, the user must be archived `
+        });
+      }
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
