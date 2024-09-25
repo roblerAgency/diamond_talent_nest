@@ -9,6 +9,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -28,8 +29,6 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 
 // Commons
 import { ResponseInterceptor, ROLES } from '../../commons';
-
-// Interceptors
 
 // Entities
 import { User } from './entities/user.entity';
@@ -65,5 +64,11 @@ export class UsersController {
   @Patch(':id')
   editUser(@Param('id', ParseIntPipe) id: number, @Body() body): Promise<User> {
     return this.usersService.editUser({ id, body });
+  }
+
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
+  @Delete(':id')
+  softDeleteUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
+    return this.usersService.softDeleteUser({ id })
   }
 }
