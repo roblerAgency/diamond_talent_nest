@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Query,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -50,8 +51,9 @@ export class UsersController {
   @Get()
   getAllUsers(
     @Query() queries: { limit: number; page: number; search: any },
+    @Req() req
   ): Promise<{ users: User[]; count: number }> {
-    return this.usersService.getAllUsers({ queries });
+    return this.usersService.getAllUsers({ queries, user: req.user });
   }
 
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)

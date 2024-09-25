@@ -1,4 +1,5 @@
 export { ITypeOfEventCategoryItem } from './typeOfEventCategoryItem.interface'
 export { ITypeOfEventCategory } from './typeOfEventCategory.interface'
+export { IUserReq } from './userReq.interface'
 export { IAuthLogin } from './auth.interface'
 export { IUser } from './user.interface'

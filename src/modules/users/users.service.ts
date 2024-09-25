@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, In, Repository } from 'typeorm';
+import { ILike, In, Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 // DTO'S
@@ -18,6 +18,7 @@ import {
   ARCHIVE_OR_ACTIVE_USER,
   ErrorManager,
   GENDER,
+  IUserReq,
   NATIONALITY,
   ROLES,
   USER_ROLES,
@@ -65,10 +66,13 @@ export class UsersService {
 
   async getAllUsers({
     queries,
+    user,
   }: {
     queries: { limit: number; page: number; search: any };
+    user: IUserReq;
   }): Promise<{ users: User[]; count: number }> {
     try {
+      const { sub } = user;
       const { search, page = 1, limit = 10 } = queries;
 
       let whereConditions = [];
@@ -120,6 +124,9 @@ export class UsersService {
           whereConditions.push({ archive });
         }
       }
+
+      // Excluir al usuario autenticado
+      whereConditions.push({ id: Not(sub) });
 
       const [users, count] = whereConditions.length
         ? await this.usersRepository.findAndCount({
@@ -261,7 +268,7 @@ export class UsersService {
       } else {
         throw new ErrorManager({
           type: 'CONFLICT',
-          message: `The user with the id ${id} is not archived, to be able to delete the user, the user must be archived `
+          message: `The user with the id ${id} is not archived, to be able to delete the user, the user must be archived `,
         });
       }
     } catch (error) {
