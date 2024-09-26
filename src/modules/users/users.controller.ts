@@ -53,6 +53,7 @@ export class UsersController {
     @Query() queries: { limit: number; page: number; search: any },
     @Query('country') country: COUNTRY[],
     @Query('city') city: CITIES[],
+    @Query('isActive') isActive: string,
     @Req() req,
   ): Promise<{ users: User[]; count: number }> {
     return this.usersService.getAllUsers({
@@ -60,6 +61,7 @@ export class UsersController {
       country: { country },
       city: { city },
       user: req.user,
+      isActive
     });
   }
 

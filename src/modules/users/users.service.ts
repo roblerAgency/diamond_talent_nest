@@ -69,11 +69,13 @@ export class UsersService {
     country,
     city,
     user,
+    isActive,
   }: {
     queries: { limit: number; page: number; search: any };
     country: { country: COUNTRY[] };
     city: { city: CITIES[] };
     user: IUserReq;
+    isActive: string;
   }): Promise<{ users: User[]; count: number }> {
     try {
       const { sub } = user;
@@ -115,16 +117,25 @@ export class UsersService {
       }
 
       if (city && city.city && city.city.length > 0) {
-        if (Array.isArray(whereConditions)) whereConditions.push({ city: In(city.city) }) 
+        if (Array.isArray(whereConditions))
+          whereConditions.push({ city: In(city.city) });
         else whereConditions.city = In(city.city);
       }
 
-      const [users, count] = await this.usersRepository.findAndCount({
+      let [users, count] = await this.usersRepository.findAndCount({
         where: whereConditions,
         skip: (page - 1) * limit,
         take: limit,
         relations: ['userLanguage'],
       });
+
+      if (isActive === 'true') {
+        users = users.filter((item) => item.archive === false);
+        count = users.length
+      } else if (isActive === 'false') {
+        users = users.filter((item) => item.archive === true);
+        count = users.length
+      }
 
       return { count, users };
     } catch (error) {
