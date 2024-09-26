@@ -109,19 +109,14 @@ export class UsersService {
       }
 
       if (country && country.country && country.country.length > 0) {
-        if (Array.isArray(whereConditions)) {
+        if (Array.isArray(whereConditions))
           whereConditions.push({ country: In(country.country) });
-        } else {
-          whereConditions.country = In(country.country);
-        }
+        else whereConditions.country = In(country.country);
       }
 
       if (city && city.city && city.city.length > 0) {
-        if (Array.isArray(whereConditions)) {
-          whereConditions.push({ city: In(city.city) });
-        } else {
-          whereConditions.city = In(city.city);
-        }
+        if (Array.isArray(whereConditions)) whereConditions.push({ city: In(city.city) }) 
+        else whereConditions.city = In(city.city);
       }
 
       const [users, count] = await this.usersRepository.findAndCount({
