@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, In, Not, Repository } from 'typeorm';
+import { In, Like, Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 // DTO'S
@@ -15,15 +15,15 @@ import { User } from './entities/user.entity';
 
 // Commons
 import {
-  ARCHIVE_OR_ACTIVE_USER,
   ErrorManager,
-  GENDER,
   IUserReq,
-  NATIONALITY,
-  ROLES,
-  USER_ROLES,
   calculateAge,
   errorManagerParamCharacter,
+  COUNTRY,
+  CITIES,
+  GENDER,
+  ROLES,
+  USER_ROLES,
 } from '../../../src/commons';
 
 @Injectable()
@@ -66,82 +66,72 @@ export class UsersService {
 
   async getAllUsers({
     queries,
+    country,
+    city,
     user,
   }: {
     queries: { limit: number; page: number; search: any };
+    country: { country: COUNTRY[] };
+    city: { city: CITIES[] };
     user: IUserReq;
   }): Promise<{ users: User[]; count: number }> {
     try {
       const { sub } = user;
       const { search, page = 1, limit = 10 } = queries;
 
-      let whereConditions = [];
-      let archive: boolean | undefined;
+      let whereConditions: any = {
+        id: Not(sub),
+      };
 
       if (search) {
-        // search for users archives or not
-        if (search.toLowerCase().includes(ARCHIVE_OR_ACTIVE_USER.ARCHIVED)) {
-          archive = true;
-        } else if (
-          search.toLowerCase().includes(ARCHIVE_OR_ACTIVE_USER.ACTIVED)
-        ) {
-          archive = false;
-        }
-
-        // search for GENDER
         const matchingGenders = Object.values(GENDER).filter((gender) =>
           gender.toLowerCase().includes(search),
         );
 
-        // search for NATIONALITY
-        const matchingNationalities = Object.values(NATIONALITY).filter(
-          (nationality) => nationality.toLowerCase().includes(search),
-        );
-
-        // search for ROLE
         const matchingRoles = Object.values(ROLES).filter((roles) =>
           roles.toLowerCase().includes(search),
         );
 
-        // search for User role
         const matchingUserRoles = Object.values(USER_ROLES).filter((roles) =>
           roles.toLowerCase().includes(search),
         );
 
         whereConditions = [
-          { firstName: ILike(`%${search}%`) },
-          { lastName: ILike(`%${search}%`) },
-          { email: ILike(`%${search}%`) },
-          { location: ILike(`%${search}%`) },
-          { address: ILike(`%${search}%`) },
-          { gender: In(matchingGenders) },
-          { nationality: In(matchingNationalities) },
-          { role: In(matchingRoles) },
+          { firstName: Like(`%${search}%`) },
+          { lastName: Like(`%${search}%`) },
+          { email: Like(`%${search}%`) },
+          { country: Like(`%${search}%`) },
+          { city: Like(`%${search}%`) },
           { userRole: In(matchingUserRoles) },
+          { gender: In(matchingGenders) },
+          { role: In(matchingRoles) },
         ];
+      }
 
-        if (archive !== undefined) {
-          whereConditions.push({ archive });
+      if (country && country.country && country.country.length > 0) {
+        if (Array.isArray(whereConditions)) {
+          whereConditions.push({ country: In(country.country) });
+        } else {
+          whereConditions.country = In(country.country);
         }
       }
 
-      // Excluir al usuario autenticado
-      whereConditions.push({ id: Not(sub) });
+      if (city && city.city && city.city.length > 0) {
+        if (Array.isArray(whereConditions)) {
+          whereConditions.push({ city: In(city.city) });
+        } else {
+          whereConditions.city = In(city.city);
+        }
+      }
 
-      const [users, count] = whereConditions.length
-        ? await this.usersRepository.findAndCount({
-            where: whereConditions,
-            skip: (page - 1) * limit,
-            take: limit,
-            relations: ['userLanguage'],
-          })
-        : await this.usersRepository.findAndCount({
-            skip: (page - 1) * limit,
-            take: limit,
-            relations: ['userLanguage'],
-          });
+      const [users, count] = await this.usersRepository.findAndCount({
+        where: whereConditions,
+        skip: (page - 1) * limit,
+        take: limit,
+        relations: ['userLanguage'],
+      });
 
-      return { users, count };
+      return { count, users };
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }

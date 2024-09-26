@@ -29,7 +29,7 @@ import { IsPublic } from 'src/auth/decorators/public.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
 // Commons
-import { ResponseInterceptor, ROLES } from '../../commons';
+import { CITIES, COUNTRY, ResponseInterceptor, ROLES } from '../../commons';
 
 // Entities
 import { User } from './entities/user.entity';
@@ -51,9 +51,16 @@ export class UsersController {
   @Get()
   getAllUsers(
     @Query() queries: { limit: number; page: number; search: any },
-    @Req() req
+    @Query('country') country: COUNTRY[],
+    @Query('city') city: CITIES[],
+    @Req() req,
   ): Promise<{ users: User[]; count: number }> {
-    return this.usersService.getAllUsers({ queries, user: req.user });
+    return this.usersService.getAllUsers({
+      queries,
+      country: { country },
+      city: { city },
+      user: req.user,
+    });
   }
 
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
@@ -71,6 +78,6 @@ export class UsersController {
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
   @Delete(':id')
   softDeleteUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    return this.usersService.softDeleteUser({ id })
+    return this.usersService.softDeleteUser({ id });
   }
 }
