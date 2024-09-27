@@ -24,6 +24,7 @@ import {
   GENDER,
   ROLES,
   USER_ROLES,
+  STATUS_ACCOUNT,
 } from '../../../src/commons';
 
 @Injectable()
@@ -69,13 +70,13 @@ export class UsersService {
     country,
     city,
     user,
-    isActive,
+    isArchive,
   }: {
     queries: { limit: number; page: number; search: any };
     country: { country: COUNTRY[] };
     city: { city: CITIES[] };
     user: IUserReq;
-    isActive: string;
+    isArchive: string;
   }): Promise<{ users: User[]; count: number }> {
     try {
       const { sub } = user;
@@ -129,12 +130,12 @@ export class UsersService {
         relations: ['userLanguage'],
       });
 
-      if (isActive === 'true') {
-        users = users.filter((item) => item.archive === false);
-        count = users.length
-      } else if (isActive === 'false') {
+      if (isArchive === 'true') {
         users = users.filter((item) => item.archive === true);
-        count = users.length
+        count = users.length;
+      } else if (isArchive === 'false') {
+        users = users.filter((item) => item.archive === false);
+        count = users.length;
       }
 
       return { count, users };
@@ -259,6 +260,7 @@ export class UsersService {
       const user: User = await this.getUserId({ id });
 
       if (user?.archive) {
+        user.verify = STATUS_ACCOUNT.REJECTED;
         await this.usersRepository.softDelete(id);
         return user;
       } else {
