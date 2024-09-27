@@ -167,8 +167,9 @@ export class UsersService {
     }
   }
 
-  async editUser({ id, body }): Promise<User> {
+  async editUser({ id, body, userReq }): Promise<User> {
     try {
+      const { sub } = userReq;
       if (!Object.values(body).length) {
         throw new ErrorManager({
           type: 'BAD_REQUEST',
@@ -176,26 +177,36 @@ export class UsersService {
         });
       }
 
+      const userRequest = await this.getUserId({ id: sub });
       const user = await this.getUserId({ id });
 
-      // if (body?.userLanguage) {
-      //   const userLanguages: UserLanguage[] = user?.userLanguage || [];
+      if (body?.userLanguage && body?.userLanguage.length) {
+        const userLanguages: UserLanguage[] = user?.userLanguage || [];
 
-      //   const filteredLanguages = body?.userLanguage?.filter(newLang =>
-      //     !userLanguages.some(existingLang => existingLang.languages === newLang)
-      //   ) || [];
+        // TODO: filtrar por lenguages que no tenga en el enum
 
-      //   const languagesItemsArray = await Promise.all(
-      //     filteredLanguages.map((item) =>
-      //       this.userLanguageRepository.create({
-      //         users: user,
-      //         languages: item,
-      //       }),
-      //     ),
-      //   );
+        const filteredLanguages =
+          body?.userLanguage?.filter(
+            (newLang) =>
+              !userLanguages.some(
+                (existingLang) => existingLang.languages === newLang,
+              ),
+          ) || [];
 
-      //   await this.userLanguageRepository.save(languagesItemsArray);
-      // }
+        if (filteredLanguages.length) {
+          const languagesItemsArray = await Promise.all(
+            filteredLanguages.map(async (item) =>
+              this.userLanguageRepository.create({
+                users: user,
+                languages: item,
+              }),
+            ),
+          );
+
+          await this.userLanguageRepository.save(languagesItemsArray);
+          return user
+        }
+      }
 
       if (body?.typesOfModeling) {
         const typesOfModelingItemsArray = await Promise.all(
@@ -246,10 +257,9 @@ export class UsersService {
       delete body.workingDaysWeek;
       delete body.typesOfEvents;
 
-      const updateUser = Object.assign(user, body);
-      await this.usersRepository.update(id, updateUser);
-
-      return updateUser;
+      console.log({ body, id })
+      await this.usersRepository.update(id, body);
+      return userRequest 
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
