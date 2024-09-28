@@ -93,7 +93,7 @@ export const setPasswordEmail = async ({
                 <br>
                 <p>Please enter a password to register</p>
                 <br>
-                <a href="${process.env.APP_HOST}/invitation-user?token=${token}" class="button">
+                <a href="${process.env.APP_HOST}/invitationUser?token=${token}" class="button">
                   Accept Invitation
                 </a>
                 <br>

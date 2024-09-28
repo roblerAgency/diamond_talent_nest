@@ -2,6 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Like, Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 // DTO'S
 import { CreateUserDto } from './dto';
@@ -70,19 +71,16 @@ export class UsersService {
 
       await this.usersRepository.save(newUser);
 
-      console.log({ userReq });
-      if(userReq) {
-        console.log({ send: 'Correo enviado' })
-
+      if (userReq) {
         const token: string = this.jwtService.sign(
-          { email: data.email, id: newUser.id },
+          { email: data.email, id: newUser.id, role: data.role },
           { expiresIn: '24h' },
         );
 
-        setPasswordEmail({ data: newUser, token })
+        setPasswordEmail({ data: newUser, token });
       }
 
-      return newUser
+      return newUser;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
@@ -211,8 +209,18 @@ export class UsersService {
         });
       }
 
-      const userRequest = await this.getUserId({ id: sub });
+      let userRequest: User;
+      if (sub) {
+        userRequest = await this.getUserId({ id: sub });
+      }
+
       const user = await this.getUserId({ id });
+
+      if (body?.password) {
+        const newPassword = await bcrypt.hash(body.password, 10);
+
+        body.password = newPassword 
+      }
 
       if (body?.userLanguage && body?.userLanguage.length) {
         const userLanguages: UserLanguage[] = user?.userLanguage || [];
@@ -291,7 +299,6 @@ export class UsersService {
       delete body.workingDaysWeek;
       delete body.typesOfEvents;
 
-      console.log({ body, id });
       await this.usersRepository.update(id, body);
       return userRequest;
     } catch (error) {
