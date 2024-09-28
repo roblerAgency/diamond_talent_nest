@@ -1,6 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Like, Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 // DTO'S
 import { CreateUserDto } from './dto';
@@ -25,6 +26,7 @@ import {
   ROLES,
   USER_ROLES,
   STATUS_ACCOUNT,
+  setPasswordEmail,
 } from '../../../src/commons';
 
 @Injectable()
@@ -41,9 +43,16 @@ export class UsersService {
     private typeOfEventCategoryItemRepository: Repository<TypeOfEventCategoryItem>,
     @InjectRepository(TypeOfEventCategory)
     private typeOfEventCategoryRepository: Repository<TypeOfEventCategory>,
+    private jwtService: JwtService,
   ) {}
 
-  async create(data: CreateUserDto): Promise<User> {
+  async create({
+    data,
+    userReq,
+  }: {
+    data: CreateUserDto;
+    userReq: string;
+  }): Promise<User> {
     try {
       const user = await this.findByEmail({ email: data.email });
 
@@ -59,7 +68,21 @@ export class UsersService {
 
       newUser.age = age;
 
-      return this.usersRepository.save(newUser);
+      await this.usersRepository.save(newUser);
+
+      console.log({ userReq });
+      if(userReq) {
+        console.log({ send: 'Correo enviado' })
+
+        const token: string = this.jwtService.sign(
+          { email: data.email, id: newUser.id },
+          { expiresIn: '24h' },
+        );
+
+        setPasswordEmail({ data: newUser, token })
+      }
+
+      return newUser
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
@@ -71,12 +94,14 @@ export class UsersService {
     city,
     user,
     isArchive,
+    completeRegister,
   }: {
     queries: { limit: number; page: number; search: any };
     country: { country: COUNTRY[] };
     city: { city: CITIES[] };
     user: IUserReq;
     isArchive: string;
+    completeRegister: string;
   }): Promise<{ users: User[]; count: number }> {
     try {
       const { sub } = user;
@@ -129,6 +154,15 @@ export class UsersService {
         take: limit,
         relations: ['userLanguage'],
       });
+
+      if (completeRegister)
+        if (completeRegister === 'true') {
+          users = users.filter((item) => item.completeRegister === true);
+          count = users.length;
+        } else if (completeRegister === 'false') {
+          users = users.filter((item) => item.completeRegister === false);
+          count = users.length;
+        }
 
       if (isArchive === 'true') {
         users = users.filter((item) => item.archive === true);
@@ -204,7 +238,7 @@ export class UsersService {
           );
 
           await this.userLanguageRepository.save(languagesItemsArray);
-          return user
+          return user;
         }
       }
 
@@ -257,9 +291,9 @@ export class UsersService {
       delete body.workingDaysWeek;
       delete body.typesOfEvents;
 
-      console.log({ body, id })
+      console.log({ body, id });
       await this.usersRepository.update(id, body);
-      return userRequest 
+      return userRequest;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
