@@ -11,5 +11,10 @@ declare namespace NodeJS {
     APP_PORT: string;
     DB_ENGINE: string;
     APP_ROOT: string;
+    EMAIL_PASSWORD: string;
+    EMAIL_USER: string;
+    APP_HOST: string;
+    EMAIL_HOST: string;
+    EMAIL_PORT: number;
   }
 }

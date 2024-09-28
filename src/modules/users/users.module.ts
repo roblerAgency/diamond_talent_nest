@@ -1,5 +1,6 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 
 // Services
 import { UsersService } from './users.service';
@@ -17,6 +18,10 @@ import { User } from './entities/user.entity';
 
 @Module({
   imports: [
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '24h' },
+    }),
     TypeOrmModule.forFeature([
       TypeOfEventCategoryItem,
       TypeOfEventCategory,

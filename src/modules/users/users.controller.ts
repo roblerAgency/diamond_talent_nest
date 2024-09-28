@@ -43,8 +43,13 @@ export class UsersController {
 
   @IsPublic()
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+  create(@Body() createUserDto: CreateUserDto, @Req() req): Promise<User> {
+    const authorizationHeader = req.headers.authorization;
+
+    return this.usersService.create({
+      data: createUserDto,
+      userReq: authorizationHeader,
+    });
   }
 
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
@@ -54,6 +59,7 @@ export class UsersController {
     @Query('country') country: COUNTRY[],
     @Query('city') city: CITIES[],
     @Query('isArchive') isArchive: string,
+    @Query('completeRegister') completeRegister: string,
     @Req() req,
   ): Promise<{ users: User[]; count: number }> {
     return this.usersService.getAllUsers({
@@ -61,7 +67,8 @@ export class UsersController {
       country: { country },
       city: { city },
       user: req.user,
-      isArchive
+      isArchive,
+      completeRegister,
     });
   }
 
@@ -73,7 +80,11 @@ export class UsersController {
 
   @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Patch(':id')
-  editUser(@Param('id', ParseIntPipe) id: number, @Body() body, @Req() req): Promise<User> {
+  editUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body,
+    @Req() req,
+  ): Promise<User> {
     return this.usersService.editUser({ id, body, userReq: req?.user });
   }
 
