@@ -199,9 +199,8 @@ export class UsersService {
     }
   }
 
-  async editUser({ id, body, userReq }): Promise<User> {
+  async editUser({ id, body }): Promise<User> {
     try {
-      const { sub } = userReq;
       if (!Object.values(body).length) {
         throw new ErrorManager({
           type: 'BAD_REQUEST',
@@ -209,17 +208,20 @@ export class UsersService {
         });
       }
 
-      let userRequest: User;
-      if (sub) {
-        userRequest = await this.getUserId({ id: sub });
-      }
-
       const user = await this.getUserId({ id });
+
+      if (body?.verify && !user.completeRegister) {
+        throw new ErrorManager({
+          type: 'BAD_REQUEST',
+          message:
+            'The user cannot be verified if the registration is not completed.',
+        });
+      }
 
       if (body?.password) {
         const newPassword = await bcrypt.hash(body.password, 10);
 
-        body.password = newPassword 
+        body.password = newPassword;
       }
 
       if (body?.userLanguage && body?.userLanguage.length) {
@@ -300,7 +302,7 @@ export class UsersService {
       delete body.typesOfEvents;
 
       await this.usersRepository.update(id, body);
-      return userRequest;
+      return user;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
