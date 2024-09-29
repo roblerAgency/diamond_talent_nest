@@ -28,6 +28,12 @@ import {
   USER_ROLES,
   STATUS_ACCOUNT,
   setPasswordEmail,
+  verifyUserEmail,
+  rejectedsUserEmail,
+  archiveUserEmail,
+  activeUserEmail,
+  registerSuccessfulUserEmail,
+  deleteUserEmail,
 } from '../../../src/commons';
 
 @Injectable()
@@ -215,7 +221,7 @@ export class UsersService {
 
       const user = await this.getUserId({ id });
 
-      if (body?.verify && !user.completeRegister) {
+      if (body?.verify === STATUS_ACCOUNT.REJECTED && !user.completeRegister) {
         throw new ErrorManager({
           type: 'BAD_REQUEST',
           message:
@@ -301,6 +307,17 @@ export class UsersService {
         );
       }
 
+      // Send emails
+      if (body?.verify === STATUS_ACCOUNT.APPROVED)
+        verifyUserEmail({ data: user });
+      else if (body?.verify === STATUS_ACCOUNT.REJECTED)
+        rejectedsUserEmail({ data: user })
+
+      if(body?.archive) archiveUserEmail({ data: user })
+      else if (!body?.archive) activeUserEmail({ data: user })
+
+      if(body?.completeRegister) registerSuccessfulUserEmail({ data: user }) 
+        
       delete body.userLanguage;
       delete body.typesOfModeling;
       delete body.workingDaysWeek;
@@ -322,6 +339,7 @@ export class UsersService {
       if (user?.archive) {
         user.verify = STATUS_ACCOUNT.REJECTED;
         await this.usersRepository.softDelete(id);
+        deleteUserEmail({ data: user })
         return user;
       } else {
         throw new ErrorManager({
