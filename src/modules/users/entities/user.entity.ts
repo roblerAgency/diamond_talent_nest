@@ -62,6 +62,9 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'bigint', default: null })
   contact: number;
 
+  @Column({ type: 'bigint', default: null, name: 'alternate_phone_number' })
+  alternatePhoneNumber: number
+
   @Column({ type: 'varchar', length: 255, name: 'first_name' })
   firstName: string;
 

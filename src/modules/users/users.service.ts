@@ -235,6 +235,7 @@ export class UsersService {
         body.password = newPassword;
       }
 
+
       if (body?.userLanguage && body?.userLanguage.length) {
         const userLanguages: UserLanguage[] = user?.userLanguage || [];
 
@@ -259,7 +260,6 @@ export class UsersService {
           );
 
           await this.userLanguageRepository.save(languagesItemsArray);
-          return user;
         }
       }
 
@@ -310,22 +310,22 @@ export class UsersService {
       // Send emails
       if (body?.verify === STATUS_ACCOUNT.APPROVED)
         verifyUserEmail({ data: user });
-      else if (body?.verify === STATUS_ACCOUNT.REJECTED)
-        rejectedsUserEmail({ data: user })
+      if (body?.verify === STATUS_ACCOUNT.REJECTED)
+        rejectedsUserEmail({ data: user });
 
-      if(body?.archive) archiveUserEmail({ data: user })
-      else if (!body?.archive) activeUserEmail({ data: user })
+      if (body?.archive) archiveUserEmail({ data: user });
+      if (!body?.archive) activeUserEmail({ data: user });
 
-      if(body?.completeRegister) registerSuccessfulUserEmail({ data: user }) 
-        
+      if (body?.completeRegister) registerSuccessfulUserEmail({ data: user });
+
       delete body.userLanguage;
       delete body.typesOfModeling;
       delete body.workingDaysWeek;
       delete body.typesOfEvents;
 
       const updateUser: User = Object.assign(user, body);
-
       await this.usersRepository.update(id, body);
+
       return updateUser;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
@@ -339,7 +339,7 @@ export class UsersService {
       if (user?.archive) {
         user.verify = STATUS_ACCOUNT.REJECTED;
         await this.usersRepository.softDelete(id);
-        deleteUserEmail({ data: user })
+        deleteUserEmail({ data: user });
         return user;
       } else {
         throw new ErrorManager({
