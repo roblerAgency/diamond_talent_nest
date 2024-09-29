@@ -122,6 +122,10 @@ export class UsersService {
           roles.toLowerCase().includes(search),
         );
 
+        const matchingUserStatusAccount = Object.values(STATUS_ACCOUNT).filter(
+          (status) => status.toLowerCase().includes(search),
+        );
+
         whereConditions = [
           { firstName: Like(`%${search}%`) },
           { lastName: Like(`%${search}%`) },
@@ -131,6 +135,7 @@ export class UsersService {
           { userRole: In(matchingUserRoles) },
           { gender: In(matchingGenders) },
           { role: In(matchingRoles) },
+          { verify: In(matchingUserStatusAccount) },
         ];
       }
 
@@ -301,8 +306,10 @@ export class UsersService {
       delete body.workingDaysWeek;
       delete body.typesOfEvents;
 
+      const updateUser: User = Object.assign(user, body);
+
       await this.usersRepository.update(id, body);
-      return user;
+      return updateUser;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
