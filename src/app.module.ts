@@ -1,6 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 // Services
 import { AuthService } from './auth/services/auth/auth.service';
@@ -11,6 +12,7 @@ import { TypeOfEventCategoryModule } from './modules/typeOfEventCategory/typeOfE
 import { WorkingDaysWeekModule } from './modules/workingDaysWeek/workingDaysWeek.module';
 import { TypesOfModelingModule } from './modules/typesOfModeling/typesOfModeling.module';
 import { UserLanguageModule } from './modules/userLanguage/userLanguage.module';
+import { UploadModule } from './modules/upload/upload.module';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -19,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
 import { configSchema } from '../config/validationSchema';
 import { enviroments } from '../enviroments';
 import config from '../config/config';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import config from '../config/config';
       load: [config],
       isGlobal: true,
       validationSchema: configSchema,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'upload'),
     }),
     UsersModule,
     DatabaseModule,
@@ -37,6 +43,7 @@ import config from '../config/config';
     WorkingDaysWeekModule,
     TypeOfEventCategoryModule,
     TypeOfEventCategoryItemModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [AuthService],
