@@ -12,7 +12,7 @@ import { UploadService } from './upload.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Entities
-import { UploadEntity } from './entities/upload.enttity';
+import { UploadEntity } from './entities/upload.entity';
 
 @Module({
   imports: [

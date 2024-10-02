@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Post,
   UploadedFile,
@@ -26,6 +27,11 @@ export class UploadController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async uploadFiles(@UploadedFile() files: Express.Multer.File) {
+
+    if (!files) {
+      throw new BadRequestException('No file uploaded');
+    }
+
     return this.uploadService.handleFileUpload(files);
   }
 }
