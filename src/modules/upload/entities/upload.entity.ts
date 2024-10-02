@@ -3,8 +3,11 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 't
 // Entities
 import { User } from 'src/modules/users/entities/user.entity';
 
+// Commons
+import { BaseEntity } from 'src/commons';
+
 @Entity({ name: 'upload' })
-export class Upload {
+export class Upload extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
