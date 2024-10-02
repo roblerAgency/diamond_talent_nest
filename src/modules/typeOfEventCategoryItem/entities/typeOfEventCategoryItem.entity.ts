@@ -42,6 +42,6 @@ export class TypeOfEventCategoryItem
   typeOfEventCategory: TypeOfEventCategory;
 
   @ManyToMany(() => User, (user) => user.typeOfEventCategoryItem)
-  @JoinTable({ name: 'user_id' })
+  @JoinTable({ name: 'type_of_event_category_item' })
   user: User;
 }
