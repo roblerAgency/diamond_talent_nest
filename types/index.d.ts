@@ -16,5 +16,6 @@ declare namespace NodeJS {
     APP_HOST: string;
     EMAIL_HOST: string;
     EMAIL_PORT: number;
+    APP_ROUTE: string;
   }
 }
