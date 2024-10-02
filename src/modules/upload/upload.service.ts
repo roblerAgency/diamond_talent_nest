@@ -3,38 +3,42 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 // Entities
-import { UploadEntity } from './entities/upload.entity';
+import { Upload } from './entities/upload.entity';
+
+// Services
+import { UsersService } from '../users/users.service';
 
 // Commons
-import { ErrorManager } from 'src/commons';
+import { ErrorManager, reqUser } from 'src/commons';
 
 @Injectable()
 export class UploadService {
   constructor(
-    @InjectRepository(UploadEntity)
-    private uploadRepository: Repository<UploadEntity>,
+    @InjectRepository(Upload)
+    private uploadRepository: Repository<Upload>,
+    private readonly usersService: UsersService,
   ) {}
 
-  async handleFileUpload(file: Express.Multer.File) {
+  async handleFileUpload({ file, userRequest }: { file: Express.Multer.File; userRequest: reqUser }) {
     try {
       if (!file) {
         throw new Error('No file uploaded');
       }
+
+      const { sub } = userRequest;
+      const user = await this.usersService.getUserId({ id: sub });
 
       const fileUrl = `upload/${file.filename}`;
 
       const newFile = this.uploadRepository.create({
         filename: file.filename,
         url: fileUrl,
+        users: user
       });
 
       await this.uploadRepository.save(newFile);
 
-      return {
-        originalName: file.originalname,
-        filename: file.filename,
-        url: fileUrl,
-      };
+      return newFile;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }

@@ -29,6 +29,7 @@ import { TypesOfModeling } from 'src/modules/typesOfModeling/entities/typesOfMod
 import { WorkingDaysWeek } from 'src/modules/workingDaysWeek/entities/workingDaysWeek.entity';
 import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
 import { TypeOfEventCategoryItem } from 'src/modules/typeOfEventCategoryItem/entities/typeOfEventCategoryItem.entity';
+import { Upload } from 'src/modules/upload/entities/upload.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity implements IUser {
@@ -233,6 +234,9 @@ export class User extends BaseEntity implements IUser {
     (typeOfEventCategoryItem) => typeOfEventCategoryItem.user,
   )
   typeOfEventCategoryItem: TypeOfEventCategoryItem;
+
+  @OneToMany(() => Upload, (upload) => upload.users)
+  uploadImages: Upload 
 
   @BeforeInsert()
   async hashPassword() {

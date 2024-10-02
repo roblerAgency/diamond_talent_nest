@@ -14,6 +14,7 @@ import { TypeOfEventCategory } from '../typeOfEventCategory/entities/typeOfEvent
 import { TypesOfModeling } from '../typesOfModeling/entities/typesOfModeling.entity';
 import { UserLanguage } from 'src/modules/userLanguage/entities/userLanguage.entity';
 import { WorkingDaysWeek } from '../workingDaysWeek/entities/workingDaysWeek.entity';
+import { Upload } from '../upload/entities/upload.entity';
 import { User } from './entities/user.entity';
 
 @Module({
@@ -29,6 +30,7 @@ import { User } from './entities/user.entity';
       WorkingDaysWeek,
       UserLanguage,
       User,
+      Upload
     ]),
   ],
   controllers: [UsersController],
