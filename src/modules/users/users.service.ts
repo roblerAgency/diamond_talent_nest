@@ -161,7 +161,7 @@ export class UsersService {
         where: whereConditions,
         skip: (page - 1) * limit,
         take: limit,
-        relations: ['userLanguage'],
+        relations: ['userLanguage', 'uploadImages'],
       });
 
       if (completeRegister)
@@ -194,7 +194,7 @@ export class UsersService {
         where: {
           id: id,
         },
-        relations: ['userLanguage'],
+        relations: ['userLanguage', 'uploadImages'],
       });
 
       if (!user) {
