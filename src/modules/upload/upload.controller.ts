@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   Controller,
+  Delete,
+  Param,
   Post,
   Req,
   UploadedFile,
@@ -39,5 +41,11 @@ export class UploadController {
 
     const userRequest: reqUser = request?.user;
     return this.uploadService.handleFileUpload({ file: files, userRequest });
+  }
+
+  @Roles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.USER)
+  @Delete(':filename')
+  async deleteFile(@Param('filename') filename: string) {
+    return this.uploadService.deleteFile({ filename })
   }
 }
