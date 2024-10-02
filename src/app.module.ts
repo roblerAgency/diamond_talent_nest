@@ -33,6 +33,7 @@ import { join } from 'path';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'upload'),
+      serveRoot: '/api/v1/',
     }),
     UsersModule,
     DatabaseModule,
