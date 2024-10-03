@@ -29,7 +29,7 @@ import { IsPublic } from 'src/auth/decorators/public.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
 // Commons
-import { CITIES, COUNTRY, ResponseInterceptor, ROLES } from '../../commons';
+import { ResponseInterceptor, ROLES } from '../../commons';
 
 // Entities
 import { User } from './entities/user.entity';
@@ -56,16 +56,16 @@ export class UsersController {
   @Get()
   getAllUsers(
     @Query() queries: { limit: number; page: number; search: any },
-    @Query('country') country: COUNTRY[],
-    @Query('city') city: CITIES[],
-    @Query('isArchive') isArchive: string,
     @Query('completeRegister') completeRegister: string,
+    @Query('isArchive') isArchive: string,
+    @Query('country') country: string,
+    @Query('city') city: string,
     @Req() req,
   ): Promise<{ users: User[]; count: number }> {
     return this.usersService.getAllUsers({
       queries,
-      country: { country },
-      city: { city },
+      country,
+      city,
       user: req.user,
       isArchive,
       completeRegister,

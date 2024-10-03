@@ -21,8 +21,6 @@ import {
   IUserReq,
   calculateAge,
   errorManagerParamCharacter,
-  COUNTRY,
-  CITIES,
   GENDER,
   ROLES,
   USER_ROLES,
@@ -101,8 +99,8 @@ export class UsersService {
     completeRegister,
   }: {
     queries: { limit: number; page: number; search: any };
-    country: { country: COUNTRY[] };
-    city: { city: CITIES[] };
+    country: string;
+    city: string;
     user: IUserReq;
     isArchive: string;
     completeRegister: string;
@@ -136,8 +134,6 @@ export class UsersService {
           { firstName: Like(`%${search}%`) },
           { lastName: Like(`%${search}%`) },
           { email: Like(`%${search}%`) },
-          { country: Like(`%${search}%`) },
-          { city: Like(`%${search}%`) },
           { userRole: In(matchingUserRoles) },
           { gender: In(matchingGenders) },
           { role: In(matchingRoles) },
@@ -145,17 +141,21 @@ export class UsersService {
         ];
       }
 
-      if (country && country.country && country.country.length > 0) {
-        if (Array.isArray(whereConditions))
-          whereConditions.push({ country: In(country.country) });
-        else whereConditions.country = In(country.country);
-      }
+      if (city) {
+        const citiesArray = city.split(',');
 
-      if (city && city.city && city.city.length > 0) {
         if (Array.isArray(whereConditions))
-          whereConditions.push({ city: In(city.city) });
-        else whereConditions.city = In(city.city);
-      }
+            whereConditions.push({ city: In(citiesArray) });
+        else whereConditions.city = In(citiesArray);
+    }
+
+      if (country) {
+        const countriesArray = country.split(',');
+
+        if (Array.isArray(whereConditions))
+            whereConditions.push({ country: In(countriesArray) });
+        else whereConditions.country = In(countriesArray);
+    }
 
       let [users, count] = await this.usersRepository.findAndCount({
         where: whereConditions,
