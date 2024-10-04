@@ -12,6 +12,7 @@ import { TypeOfEventCategoryModule } from './modules/typeOfEventCategory/typeOfE
 import { WorkingDaysWeekModule } from './modules/workingDaysWeek/workingDaysWeek.module';
 import { TypesOfModelingModule } from './modules/typesOfModeling/typesOfModeling.module';
 import { UserLanguageModule } from './modules/userLanguage/userLanguage.module';
+import { SendEmailsModule } from './modules/sendEmails/sendEmails.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
@@ -45,6 +46,7 @@ import { join } from 'path';
     TypeOfEventCategoryModule,
     TypeOfEventCategoryItemModule,
     UploadModule,
+    SendEmailsModule,
   ],
   controllers: [],
   providers: [AuthService],
