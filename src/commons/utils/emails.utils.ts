@@ -1,4 +1,5 @@
 import { createTransport, Transporter } from 'nodemailer';
+import { UserSelectionDto } from 'src/modules/sendEmails/dto';
 
 // Entities
 import { User } from 'src/modules/users/entities/user.entity';
@@ -551,3 +552,78 @@ export const deleteUserEmail = async ({ data }: { data: User }) => {
       `,
   });
 };
+
+export const seleccionUserEmail = async ({ data, user }: { data: UserSelectionDto, user: User }) => {
+    await transporter.sendMail({
+      from: '"Seleccion account⚡" <diamondtalent@vlakov.agency>',
+      to: data.email,
+      subject: `Hello ${data.firstName} ${data.lastName}`,
+      html: `
+         <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Email Notification</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f4f4f4;
+                }
+                .container {
+                    width: 100%;
+                    max-width: 600px;
+                    margin: auto;
+                    background-color: #ffffff;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                .header {
+                    padding: 20px;
+                }
+                .content {
+                    padding: 20px;
+                }
+                .footer {
+                    background-color: #f1f1f1;
+                    text-align: center;
+                    padding: 10px;
+                    font-size: 12px;
+                }
+                a {
+                    color: #007BFF;
+                    text-decoration: none;
+                }
+            </style>
+        </head>
+        <body>
+
+        <div class="container">
+            <div class="header">
+                <h1>Congratulations!</h1>
+            </div>
+            <div class="content">
+                <h2>Hello ${data?.firstName} ${data?.lastName},</h2>
+                <p>We are pleased to inform you that you have been selected for <strong>${user?.firstName} ${user?.lastName}</strong>. Congratulations on this achievement! We are excited to have you with us and can’t wait to embark on this new journey together.</p>
+                <br>
+                <p>If you have any questions or need further information, please feel free to contact ${user?.email} or our support team.</p>
+                <br>
+                <p>Thank you for being a part of our community!</p>
+                <br>
+                <p>Best regards,<br>${data?.firstName} ${data?.lastName}</p>
+                <br>
+                <a href="google.com">Visit our website</a>
+            </div>
+            <div class="footer">
+                <p>&copy; 2024 Your Company. All rights reserved.</p>
+            </div>
+        </div>
+
+        </body>
+        </html>
+        `,
+    });
+  };
