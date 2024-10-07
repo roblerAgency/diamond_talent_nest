@@ -1,6 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { join } from 'path';
 
 // Entities
 import { Upload } from './entities/upload.entity';
@@ -12,7 +13,9 @@ import { UsersService } from '../users/users.service';
 import { ErrorManager, reqUser } from 'src/commons';
 
 import { existsSync, unlinkSync } from 'fs';
-import { join } from 'path';
+
+// Dtos
+import { TypeUploadDto } from './dto';
 
 @Injectable()
 export class UploadService {
@@ -25,9 +28,11 @@ export class UploadService {
   async handleFileUpload({
     file,
     userRequest,
+    body
   }: {
     file: Express.Multer.File;
     userRequest: reqUser;
+    body: TypeUploadDto
   }) {
     try {
       if (!file) {
@@ -42,6 +47,7 @@ export class UploadService {
       const newFile = this.uploadRepository.create({
         filename: file.filename,
         url: fileUrl,
+        typePicture: body.typePicture,
         users: user,
       });
 

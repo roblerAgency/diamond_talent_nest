@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Delete,
   Param,
@@ -22,6 +23,9 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 // Services
 import { UploadService } from './upload.service';
 
+// Dtos
+import { TypeUploadDto } from './dto';
+
 @Controller('upload')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(ResponseInterceptor)
@@ -33,6 +37,7 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFiles(
     @UploadedFile() files: Express.Multer.File,
+    @Body() body: TypeUploadDto, 
     @Req() request,
   ) {
     if (!files) {
@@ -40,7 +45,7 @@ export class UploadController {
     }
 
     const userRequest: reqUser = request?.user;
-    return this.uploadService.handleFileUpload({ file: files, userRequest });
+    return this.uploadService.handleFileUpload({ file: files, userRequest, body });
   }
 
   @Roles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.USER)
