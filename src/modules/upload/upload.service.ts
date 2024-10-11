@@ -2,6 +2,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { join } from 'path';
+import * as path from 'path';
+import { promises as fs } from 'fs';
+import { existsSync, unlinkSync } from 'fs';
 
 // Entities
 import { Upload } from './entities/upload.entity';
@@ -11,8 +14,6 @@ import { UsersService } from '../users/users.service';
 
 // Commons
 import { ErrorManager, reqUser } from 'src/commons';
-
-import { existsSync, unlinkSync } from 'fs';
 
 // Dtos
 import { TypeUploadDto } from './dto';
@@ -28,21 +29,30 @@ export class UploadService {
   async handleFileUpload({
     file,
     userRequest,
-    body
+    body,
   }: {
     file: Express.Multer.File;
     userRequest: reqUser;
-    body: TypeUploadDto
+    body: TypeUploadDto;
   }) {
     try {
       if (!file) {
         throw new Error('No file uploaded');
       }
 
+      const uploadDir = path.join(__dirname, '../../', 'upload'); 
+      console.log({ uploadDir })
+
       const { sub } = userRequest;
       const user = await this.usersService.getUserId({ id: sub });
 
       const fileUrl = `upload/${file.filename}`;
+
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir);
+      }
 
       const newFile = this.uploadRepository.create({
         filename: file.filename,
@@ -63,7 +73,15 @@ export class UploadService {
     try {
       const file = await this.getFileByName({ filename });
 
-      const fileUrl = join(__dirname, '..', '..', '..', '..', 'upload', filename)
+      const fileUrl = join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'upload',
+        filename,
+      );
 
       if (!existsSync(fileUrl)) {
         throw new NotFoundException(`File ${filename} not found`);
@@ -75,7 +93,7 @@ export class UploadService {
 
       unlinkSync(fileUrl);
 
-      return file
+      return file;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
