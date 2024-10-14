@@ -38,7 +38,6 @@ async function bootstrap() {
 
   app.enableCors(CORS);
 
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
+  await app.listen(process.env.APP_PORT);
 }
 bootstrap();
