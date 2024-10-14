@@ -10,7 +10,6 @@ import { CORS } from './commons/constants';
 
 // Libreries
 import * as morgan from 'morgan';
-import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
