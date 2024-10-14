@@ -134,6 +134,7 @@ export class UsersService {
           { firstName: Like(`%${search}%`) },
           { lastName: Like(`%${search}%`) },
           { email: Like(`%${search}%`) },
+          { address: Like(`%${search}%`) },
           { userRole: In(matchingUserRoles) },
           { gender: In(matchingGenders) },
           { role: In(matchingRoles) },
@@ -145,17 +146,17 @@ export class UsersService {
         const citiesArray = city.split(',');
 
         if (Array.isArray(whereConditions))
-            whereConditions.push({ city: In(citiesArray) });
+          whereConditions.push({ city: In(citiesArray) });
         else whereConditions.city = In(citiesArray);
-    }
+      }
 
       if (country) {
         const countriesArray = country.split(',');
 
         if (Array.isArray(whereConditions))
-            whereConditions.push({ country: In(countriesArray) });
+          whereConditions.push({ country: In(countriesArray) });
         else whereConditions.country = In(countriesArray);
-    }
+      }
 
       let [users, count] = await this.usersRepository.findAndCount({
         where: whereConditions,
@@ -234,7 +235,6 @@ export class UsersService {
 
         body.password = newPassword;
       }
-
 
       if (body?.userLanguage && body?.userLanguage.length) {
         const userLanguages: UserLanguage[] = user?.userLanguage || [];
