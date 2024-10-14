@@ -33,7 +33,7 @@ export class UploadService {
   }: {
     file: Express.Multer.File;
     userRequest: reqUser;
-    body: TypeUploadDto;
+    body: any;
   }) {
     try {
       if (!file) {

@@ -37,7 +37,7 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFiles(
     @UploadedFile() files: Express.Multer.File,
-    @Body() body: TypeUploadDto, 
+    @Body() body: any, 
     @Req() request,
   ) {
     if (!files) {
