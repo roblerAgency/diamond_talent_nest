@@ -56,14 +56,25 @@ export class UsersController {
   @Get()
   getAllUsers(
     @Query() queries: { limit: number; page: number; search: any },
+    @Query('filterUser') filterUser: string,
     @Query('completeRegister') completeRegister: string,
     @Query('isArchive') isArchive: string,
     @Query('country') country: string,
     @Query('city') city: string,
     @Req() req,
   ): Promise<{ users: User[]; count: number }> {
+    let parsedFilterUser;
+    if (filterUser) {
+      try {
+        parsedFilterUser = JSON.parse(filterUser);
+      } catch (error) {
+        throw new Error('Invalid filterUser format');
+      }
+    }
+
     return this.usersService.getAllUsers({
       queries,
+      filterUser: parsedFilterUser,
       country,
       city,
       user: req.user,

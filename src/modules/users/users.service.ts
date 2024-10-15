@@ -92,6 +92,7 @@ export class UsersService {
 
   async getAllUsers({
     queries,
+    filterUser,
     country,
     city,
     user,
@@ -99,6 +100,7 @@ export class UsersService {
     completeRegister,
   }: {
     queries: { limit: number; page: number; search: any };
+    filterUser?: any;
     country: string;
     city: string;
     user: IUserReq;
@@ -140,6 +142,18 @@ export class UsersService {
           { role: In(matchingRoles) },
           { verify: In(matchingUserStatusAccount) },
         ];
+      }
+
+      if (filterUser) {
+        if (filterUser.age) {
+          whereConditions.age = Number(filterUser.age);
+        }
+        if (filterUser.height) {
+          whereConditions.height = Number(filterUser.height);
+        }
+        if (filterUser.extent) {
+          whereConditions.weight = Number(filterUser.weight);
+        }
       }
 
       if (city) {
