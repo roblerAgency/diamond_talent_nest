@@ -196,6 +196,7 @@ export class UsersService {
         count = users.length;
       }
 
+      console.log("test deploy content resources")
       return { count, users };
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
