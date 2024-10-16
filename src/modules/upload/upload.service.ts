@@ -15,9 +15,6 @@ import { UsersService } from '../users/users.service';
 // Commons
 import { ErrorManager, reqUser } from 'src/commons';
 
-// Dtos
-import { TypeUploadDto } from './dto';
-
 @Injectable()
 export class UploadService {
   constructor(
@@ -36,12 +33,9 @@ export class UploadService {
     body: any;
   }) {
     try {
-      if (!file) {
-        throw new Error('No file uploaded');
-      }
+      if (!file) throw new Error('No file uploaded');
 
       const uploadDir = path.join(__dirname, '../../', 'upload'); 
-      console.log({ uploadDir })
 
       const { sub } = userRequest;
       const user = await this.usersService.getUserId({ id: sub });
