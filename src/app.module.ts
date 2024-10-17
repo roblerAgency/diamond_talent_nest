@@ -24,6 +24,8 @@ import { enviroments } from '../enviroments';
 import config from '../config/config';
 import { join } from 'path';
 
+// TODO: Desplegar las imagenes en Hostinger
+
 @Module({
   imports: [
     ConfigModule.forRoot({
