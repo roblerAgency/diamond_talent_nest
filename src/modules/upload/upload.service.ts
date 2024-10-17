@@ -45,24 +45,19 @@ export class UploadService {
       const { sub } = userRequest;
       const user = await this.usersService.getUserId({ id: sub });
 
-      const filePath = file.path; 
-
-      const response = await lastValueFrom(
-        this.httpService.post(
-          'https://diamondtalentnest-production.up.railway.app/api/v1/upload',
-          fs.createReadStream(filePath),
-          {
-            headers: {
-              'Content-Type': file.mimetype,
-              'Content-Disposition': `attachment; filename="${file.originalname}"`,
-            },
-          },
-        ),
+      // Obtener la ruta donde se guardará el archivo
+      const uploadPath = join(
+        process.cwd(),
+        'public_html',
+        'api_images',
+        file.originalname,
       );
-      console.log({ response });
 
+      // Guardar el archivo en la carpeta api_images
+      await fs.promises.writeFile(uploadPath, file.buffer); // Usar el buffer del archivo
+
+      // Generar la URL del archivo guardado
       const fileUrl = `https://vlakov.agency/api_images/${file.originalname}`;
-      console.log({ fileUrl })
 
       const newFile = this.uploadRepository.create({
         filename: file.filename,
@@ -72,6 +67,7 @@ export class UploadService {
       });
 
       await this.uploadRepository.save(newFile);
+
       return newFile;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
