@@ -33,22 +33,13 @@ export class UploadService {
   }) {
     try {
       if (!file) throw new Error('No file uploaded');
-      console.log({ file })
-
-      const uploadDir = join(__dirname, '..', '..', 'upload');
-      console.log({ uploadDir })
+      console.log({ file });
 
       const { sub } = userRequest;
       const user = await this.usersService.getUserId({ id: sub });
 
       const fileUrl = `upload/${file.filename}`;
-      console.log({ fileUrl })
-
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir);
-      }
+      console.log({ fileUrl });
 
       const newFile = this.uploadRepository.create({
         filename: file.filename,
@@ -56,7 +47,7 @@ export class UploadService {
         typePicture: body.typePicture,
         users: user,
       });
-      console.log({ newFile })
+      console.log({ newFile });
 
       await this.uploadRepository.save(newFile);
 
