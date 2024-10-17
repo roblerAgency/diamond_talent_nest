@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import { join } from 'path';
 
 async function checkAndCreateUploadFolder() {
-  const folderPath = join(__dirname, 'dist', 'src');
+  const folderPath = join(__dirname, 'dist', 'src', 'upload');
 
   try {
     await fs.access(folderPath);
