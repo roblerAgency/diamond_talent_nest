@@ -2,7 +2,6 @@ import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
-const path = require('path');
 
 // Services
 import { AuthService } from './auth/services/auth/auth.service';
@@ -23,8 +22,7 @@ import { AuthModule } from './auth/auth.module';
 import { configSchema } from '../config/validationSchema';
 import { enviroments } from '../enviroments';
 import config from '../config/config';
-
-console.log({ 'route upload': path.join('dist', 'src', 'upload') });
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -35,7 +33,7 @@ console.log({ 'route upload': path.join('dist', 'src', 'upload') });
       validationSchema: configSchema,
     }),
     ServeStaticModule.forRoot({
-      rootPath: path.join('dist', 'src', 'upload'),
+      rootPath: join(process.cwd(), 'upload'),
       serveRoot: '/api/v1/',
     }),
     UsersModule,
