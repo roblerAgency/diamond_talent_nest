@@ -24,7 +24,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UploadService } from './upload.service';
 
 // Dtos
-import { TypeUploadDto } from './dto';
+// import { TypeUploadDto } from './dto';
 
 @Controller('upload')
 @UseGuards(JwtAuthGuard, RolesGuard)

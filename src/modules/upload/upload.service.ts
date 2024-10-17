@@ -45,27 +45,24 @@ export class UploadService {
       const { sub } = userRequest;
       const user = await this.usersService.getUserId({ id: sub });
 
-      // Obtener la ruta del archivo guardado
-      const filePath = file.path; // Este es el path proporcionado por Multer
+      const filePath = file.path; 
 
-      // Hacer la petición a la URL externa
       const response = await lastValueFrom(
         this.httpService.post(
-          'https://vlakov.agency/api_images/',
+          'https://diamondtalentnest-production.up.railway.app/api/v1/upload',
           fs.createReadStream(filePath),
           {
             headers: {
-              'Content-Type': file.mimetype, // Establecer el tipo de contenido del archivo
-              'Content-Disposition': `attachment; filename="${file.originalname}"`, // Establecer el nombre del archivo
+              'Content-Type': file.mimetype,
+              'Content-Disposition': `attachment; filename="${file.originalname}"`,
             },
           },
         ),
       );
-
-      // Aquí puedes manejar la respuesta del servidor externo
       console.log({ response });
 
-      const fileUrl = `https://vlakov.agency/api_images/${file.originalname}`; // Cambia esto según cómo el servidor maneje las URLs
+      const fileUrl = `https://vlakov.agency/api_images/${file.originalname}`;
+      console.log({ fileUrl })
 
       const newFile = this.uploadRepository.create({
         filename: file.filename,
@@ -75,7 +72,6 @@ export class UploadService {
       });
 
       await this.uploadRepository.save(newFile);
-
       return newFile;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
