@@ -2,7 +2,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { join } from 'path';
-import * as path from 'path';
 import { promises as fs } from 'fs';
 import { existsSync, unlinkSync } from 'fs';
 
@@ -36,7 +35,7 @@ export class UploadService {
       if (!file) throw new Error('No file uploaded');
       console.log({ file })
 
-      const uploadDir = path.join(__dirname, '../../', 'upload'); 
+      const uploadDir = join(__dirname, 'dist', 'src', 'upload');
       console.log({ uploadDir })
 
       const { sub } = userRequest;
