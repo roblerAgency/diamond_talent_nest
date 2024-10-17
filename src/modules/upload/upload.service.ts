@@ -48,7 +48,7 @@ export class UploadService {
       });
       console.log({ newFile });
 
-      const route = join(process.cwd(), 'upload')
+      const route = join(__dirname, 'dist', 'src', 'upload')
       console.log({ route })
 
       await this.uploadRepository.save(newFile);

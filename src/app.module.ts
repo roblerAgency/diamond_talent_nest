@@ -33,7 +33,7 @@ import { join } from 'path';
       validationSchema: configSchema,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'upload'),
+      rootPath: join(__dirname, 'dist', 'src', 'upload'),
       serveRoot: '/api/v1/',
     }),
     UsersModule,
