@@ -24,6 +24,7 @@ import { enviroments } from '../enviroments';
 import config from '../config/config';
 import { join } from 'path';
 
+console.log({ 'rolitrancoemmgovo': join(__dirname, 'dist', 'src', 'upload') })
 @Module({
   imports: [
     ConfigModule.forRoot({
