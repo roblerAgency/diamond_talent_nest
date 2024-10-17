@@ -24,6 +24,8 @@ import { configSchema } from '../config/validationSchema';
 import { enviroments } from '../enviroments';
 import config from '../config/config';
 
+console.log({ 'route upload': path.join('dist', 'src', 'upload') });
+
 @Module({
   imports: [
     ConfigModule.forRoot({
