@@ -3,7 +3,7 @@ import { join } from 'path';
 
 async function checkAndCreateUploadFolder() {
   // Cambia la ruta a '/app/dist/src/upload'
-  const folderPath = join(__dirname, 'app', 'dist', 'src', 'upload');
+  const folderPath = join(__dirname, 'dist', 'src', 'upload');
 
   try {
     await fs.access(folderPath);
