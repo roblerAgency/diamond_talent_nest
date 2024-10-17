@@ -35,7 +35,7 @@ export class UploadService {
       if (!file) throw new Error('No file uploaded');
       console.log({ file })
 
-      const uploadDir = join(__dirname, 'dist', 'src', 'upload');
+      const uploadDir = join(__dirname, '..', '..', 'upload');
       console.log({ uploadDir })
 
       const { sub } = userRequest;
