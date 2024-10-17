@@ -2,7 +2,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import path from 'path';
+const path = require('path');
 
 // Services
 import { AuthService } from './auth/services/auth/auth.service';
@@ -24,7 +24,6 @@ import { configSchema } from '../config/validationSchema';
 import { enviroments } from '../enviroments';
 import config from '../config/config';
 
-console.log({ 'rolitrancoemmgovo': path.join('dist', 'src', 'upload') })
 @Module({
   imports: [
     ConfigModule.forRoot({
