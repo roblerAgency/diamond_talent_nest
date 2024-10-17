@@ -8,8 +8,8 @@ import { Repository } from 'typeorm';
 import { join } from 'path';
 import { existsSync, unlinkSync } from 'fs';
 import { HttpService } from '@nestjs/axios';
+import * as fs from 'fs/promises';
 import { lastValueFrom } from 'rxjs';
-import * as fs from 'fs';
 
 // Entities
 import { Upload } from './entities/upload.entity';
@@ -45,18 +45,19 @@ export class UploadService {
       const { sub } = userRequest;
       const user = await this.usersService.getUserId({ id: sub });
 
-      // Obtener la ruta donde se guardará el archivo
-      const uploadPath = join(
-        process.cwd(),
-        'public_html',
-        'api_images',
-        file.originalname,
+      const fileBuffer = await fs.readFile(file.path);
+      console.log({ fileBuffer })
+
+      const response = await lastValueFrom(
+        this.httpService.post('https://vlakov.agency/api_images/', fileBuffer, {
+          headers: {
+            'Content-Type': file.mimetype,
+            'Content-Disposition': `attachment; filename="${file.originalname}"`,
+          },
+        }),
       );
+      console.log({ response });
 
-      // Guardar el archivo en la carpeta api_images
-      await fs.promises.writeFile(uploadPath, file.buffer); // Usar el buffer del archivo
-
-      // Generar la URL del archivo guardado
       const fileUrl = `https://vlakov.agency/api_images/${file.originalname}`;
 
       const newFile = this.uploadRepository.create({
