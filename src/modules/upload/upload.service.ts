@@ -46,10 +46,6 @@ export class UploadService {
         typePicture: body.typePicture,
         users: user,
       });
-      console.log({ newFile });
-
-      const route = join(__dirname, 'dist', 'src', 'upload')
-      console.log({ route })
 
       await this.uploadRepository.save(newFile);
 
