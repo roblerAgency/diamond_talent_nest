@@ -4,6 +4,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { JwtService } from '@nestjs/jwt';
+import { HttpModule } from '@nestjs/axios';
 
 // Controllers
 import { UploadController } from './upload.controller';
@@ -26,9 +27,10 @@ import { Upload } from './entities/upload.entity';
 
 @Module({
   imports: [
+    HttpModule, 
     MulterModule.register({
       storage: diskStorage({
-        destination: './upload',
+        destination: './public_html/api_images',
         filename: (req, file, cb) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);

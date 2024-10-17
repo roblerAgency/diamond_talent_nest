@@ -1,8 +1,15 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { join } from 'path';
 import { existsSync, unlinkSync } from 'fs';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+import * as fs from 'fs';
 
 // Entities
 import { Upload } from './entities/upload.entity';
@@ -19,6 +26,7 @@ export class UploadService {
     @InjectRepository(Upload)
     private uploadRepository: Repository<Upload>,
     private readonly usersService: UsersService,
+    private readonly httpService: HttpService,
   ) {}
 
   async handleFileUpload({
@@ -31,14 +39,33 @@ export class UploadService {
     body: any;
   }) {
     try {
-      if (!file) throw new Error('No file uploaded');
+      if (!file) throw new BadRequestException('No file uploaded');
       console.log({ file });
 
       const { sub } = userRequest;
       const user = await this.usersService.getUserId({ id: sub });
 
-      const fileUrl = `upload/${file.filename}`;
-      console.log({ fileUrl });
+      // Obtener la ruta del archivo guardado
+      const filePath = file.path; // Este es el path proporcionado por Multer
+
+      // Hacer la petición a la URL externa
+      const response = await lastValueFrom(
+        this.httpService.post(
+          'https://vlakov.agency/api_images/',
+          fs.createReadStream(filePath),
+          {
+            headers: {
+              'Content-Type': file.mimetype, // Establecer el tipo de contenido del archivo
+              'Content-Disposition': `attachment; filename="${file.originalname}"`, // Establecer el nombre del archivo
+            },
+          },
+        ),
+      );
+
+      // Aquí puedes manejar la respuesta del servidor externo
+      console.log({ response });
+
+      const fileUrl = `https://vlakov.agency/api_images/${file.originalname}`; // Cambia esto según cómo el servidor maneje las URLs
 
       const newFile = this.uploadRepository.create({
         filename: file.filename,
