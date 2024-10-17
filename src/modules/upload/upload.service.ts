@@ -2,6 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { join } from 'path';
+import * as path from 'path';
 import { promises as fs } from 'fs';
 import { existsSync, unlinkSync } from 'fs';
 
@@ -33,13 +34,22 @@ export class UploadService {
   }) {
     try {
       if (!file) throw new Error('No file uploaded');
-      console.log({ file });
+      console.log({ file })
+
+      const uploadDir = path.join(__dirname, '../../', 'upload'); 
+      console.log({ uploadDir })
 
       const { sub } = userRequest;
       const user = await this.usersService.getUserId({ id: sub });
 
       const fileUrl = `upload/${file.filename}`;
-      console.log({ fileUrl });
+      console.log({ fileUrl })
+
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir);
+      }
 
       const newFile = this.uploadRepository.create({
         filename: file.filename,
@@ -47,7 +57,7 @@ export class UploadService {
         typePicture: body.typePicture,
         users: user,
       });
-      console.log({ newFile });
+      console.log({ newFile })
 
       await this.uploadRepository.save(newFile);
 
