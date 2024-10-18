@@ -1,15 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import axios from 'axios';
 
 import * as FormData from 'form-data';
-import { existsSync, unlinkSync } from 'fs';
-import { join } from 'path';
 import * as fs from 'fs';
 
 // Entities
@@ -48,16 +42,12 @@ export class UploadService {
       const filePath = file.path;
       formData.append('file', fs.createReadStream(filePath), file.originalname);
 
-      const response = await axios.post(
-        'https://diamondtalentuploadapi-production.up.railway.app/upload',
-        formData,
-        {
-          headers: {
-            ...formData.getHeaders(),
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.post(process.env.API_DIAMOND_TALENT_UPLOAD, formData, {
+        headers: {
+          ...formData.getHeaders(),
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       const { url, filename } = response?.data?.data;
 
@@ -76,30 +66,27 @@ export class UploadService {
     }
   }
 
-  async deleteFile({ filename }) {
+  async deleteFile({
+    filename,
+    tokenRequest,
+  }: {
+    filename: string;
+    tokenRequest: { token: string };
+  }) {
     try {
       const file = await this.getFileByName({ filename });
 
-      const fileUrl = join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        '..',
-        'upload',
-        filename,
-      );
+      const response = await axios.delete(process.env.API_DIAMOND_TALENT_UPLOAD, {
+        headers: {
+          Authorization: `Bearer ${tokenRequest?.token}`,
+        },
+        data: { file: file?.filename },
+      });
 
-      if (!existsSync(fileUrl)) {
-        throw new NotFoundException(`File ${filename} not found`);
+      if(response?.data) {
+        const { data } = response?.data
+        await this.uploadRepository.delete({ filename: data })
       }
-
-      if (file) {
-        await this.uploadRepository.delete(file?.id);
-      }
-
-      unlinkSync(fileUrl);
-
       return file;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
@@ -108,7 +95,16 @@ export class UploadService {
 
   async getFileByName({ filename }) {
     try {
-      return this.uploadRepository.findOneBy({ filename });
+      const file = await this.uploadRepository.findOneBy({ filename });
+
+      if (!file) {
+        throw new ErrorManager({
+          type: 'NOT_FOUND',
+          message: `this file ${filename} was not found`,
+        });
+      }
+
+      return file;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
