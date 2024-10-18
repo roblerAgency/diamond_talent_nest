@@ -17,5 +17,6 @@ declare namespace NodeJS {
     EMAIL_HOST: string;
     EMAIL_PORT: number;
     APP_ROUTE: string;
+    API_DIAMOND_TALENT_UPLOAD: string;
   }
 }
