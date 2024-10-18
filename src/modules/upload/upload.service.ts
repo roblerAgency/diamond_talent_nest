@@ -61,8 +61,6 @@ export class UploadService {
 
       const { url, filename } = response?.data?.data;
 
-      console.log({ url, filename })
-
       const newFile = this.uploadRepository.create({
         typePicture: body.typePicture,
         users: user,
