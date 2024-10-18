@@ -37,20 +37,27 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFiles(
     @UploadedFile() files: Express.Multer.File,
-    @Body() body: any, 
+    @Body() body: any,
     @Req() request,
   ) {
     if (!files) {
       throw new BadRequestException('No file uploaded');
     }
 
-    const userRequest: reqUser = request?.user;
-    return this.uploadService.handleFileUpload({ file: files, userRequest, body });
+    const userRequest: { user: reqUser; token: string } = {
+      user: request?.user,
+      token: request?.headers?.authorization.split(' ')[1],
+    };
+    return this.uploadService.handleFileUpload({
+      file: files,
+      userRequest,
+      body,
+    });
   }
 
   @Roles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.USER)
   @Delete(':filename')
   async deleteFile(@Param('filename') filename: string) {
-    return this.uploadService.deleteFile({ filename })
+    return this.uploadService.deleteFile({ filename });
   }
 }

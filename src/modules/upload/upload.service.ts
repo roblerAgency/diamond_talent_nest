@@ -5,11 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { join } from 'path';
+import axios from 'axios';
+
+import * as FormData from 'form-data';
 import { existsSync, unlinkSync } from 'fs';
-import { HttpService } from '@nestjs/axios';
-import * as fs from 'fs/promises';
-import { lastValueFrom } from 'rxjs';
+import { join } from 'path';
+import * as fs from 'fs';
 
 // Entities
 import { Upload } from './entities/upload.entity';
@@ -26,7 +27,6 @@ export class UploadService {
     @InjectRepository(Upload)
     private uploadRepository: Repository<Upload>,
     private readonly usersService: UsersService,
-    private readonly httpService: HttpService,
   ) {}
 
   async handleFileUpload({
@@ -35,41 +35,42 @@ export class UploadService {
     body,
   }: {
     file: Express.Multer.File;
-    userRequest: reqUser;
+    userRequest: { user: reqUser; token: string };
     body: any;
   }) {
     try {
       if (!file) throw new BadRequestException('No file uploaded');
-      console.log({ file });
+      const { user: userReq, token } = userRequest;
 
-      const { sub } = userRequest;
-      const user = await this.usersService.getUserId({ id: sub });
+      const user = await this.usersService.getUserId({ id: userReq.sub });
 
-      const fileBuffer = await fs.readFile(file.path);
-      console.log({ fileBuffer })
+      const formData = new FormData();
+      const filePath = file.path;
+      formData.append('file', fs.createReadStream(filePath), file.originalname);
 
-      const response = await lastValueFrom(
-        this.httpService.post('https://vlakov.agency/api_images/', fileBuffer, {
+      const response = await axios.post(
+        'https://diamondtalentuploadapi-production.up.railway.app/upload',
+        formData,
+        {
           headers: {
-            'Content-Type': file.mimetype,
-            'Content-Disposition': `attachment; filename="${file.originalname}"`,
+            ...formData.getHeaders(),
+            Authorization: `Bearer ${token}`,
           },
-        }),
+        },
       );
-      console.log({ response });
 
-      const fileUrl = `https://vlakov.agency/api_images/${file.originalname}`;
+      const { url, filename } = response?.data?.data;
 
       const newFile = this.uploadRepository.create({
-        filename: file.filename,
-        url: fileUrl,
         typePicture: body.typePicture,
         users: user,
+        filename,
+        url,
       });
 
       await this.uploadRepository.save(newFile);
 
-      return newFile;
+      return file;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
