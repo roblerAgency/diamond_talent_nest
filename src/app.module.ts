@@ -24,10 +24,6 @@ import { enviroments } from '../enviroments';
 import config from '../config/config';
 import { join } from 'path';
 
-// TODO: Desplegar las imagenes en Hostinger
-// ? Endpoint: https://vlakov.agency/api_images/
-// Hay que guardar las imagenes en ese endpoint, las guardamos y consumimos
-
 @Module({
   imports: [
     ConfigModule.forRoot({
