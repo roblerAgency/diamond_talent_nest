@@ -209,7 +209,13 @@ export class UsersService {
         where: {
           id: id,
         },
-        relations: ['userLanguage', 'uploadImages'],
+        relations: [
+          'userLanguage',
+          'uploadImages',
+          'typesOfModeling',
+          'workingDaysWeek',
+          'typeOfEventCategoryItem',
+        ],
       });
 
       if (!user) {
