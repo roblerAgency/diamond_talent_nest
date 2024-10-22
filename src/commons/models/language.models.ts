@@ -1,7 +1,7 @@
 export enum LANGUAGES {
   INGLES = 'Inglés',
-  CHINO_MANDARIN = 'Chino mandarín',
-  INDOSTANICO = 'Indostánico (hindi estándar, urdu)',
+  CHINO_MANDARIN = 'Chino mandarin',
+  INDOSTANICO = 'Indostanico',
   ESPANOL = 'Español',
   FRANCES = 'Francés',
   ARABE_ESTANDAR_MODERNO = 'Árabe estándar moderno',
@@ -34,7 +34,7 @@ export enum LANGUAGES {
   AMARICO = 'Amárico',
   BHOSHPURI = 'Bhoshpuri',
   PANYABI = 'Panyabí',
-  CHINO_MIN_NAN = 'Chino Mǐn Nán',
+  CHINO_MIN_NAN = 'Chino mǐn nán',
   CHINO_JIN = 'Chino jin',
   YORUBA = 'Yoruba',
   CHINO_HAKKA = 'Chino hakka',

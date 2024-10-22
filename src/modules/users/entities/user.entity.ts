@@ -21,7 +21,8 @@ import {
   CITIES,
   WEEKLY_HOURS,
   COUNTRY,
-  STATUS_ACCOUNT
+  STATUS_ACCOUNT,
+  HAIR
 } from '../../../commons/';
 
 // Entities
@@ -82,8 +83,7 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'varchar', length: 100, default: null })
   etnia: string;
 
-  @Column({ type: 'varchar', length: 100, default: null })
-  hair: string;
+ 
 
   @Column({ type: 'varchar', length: 100, default: null })
   shoes: string;
@@ -202,6 +202,9 @@ export class User extends BaseEntity implements IUser {
 
   @Column({ type: 'enum', enum: EYES, default: null })
   eye: EYES;
+
+  @Column({ type: 'enum', enum: HAIR, default: null })
+  hair: HAIR;
 
   @Column({ type: 'enum', enum: NATIONALITY, default: null })
   nationality: NATIONALITY;

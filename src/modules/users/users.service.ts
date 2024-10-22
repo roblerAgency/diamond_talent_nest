@@ -259,19 +259,17 @@ export class UsersService {
       if (body?.userLanguage && body?.userLanguage.length) {
         const userLanguages: UserLanguage[] = user?.userLanguage || [];
 
-        // TODO: filtrar por lenguages que no tenga en el enum
-
         const filteredLanguages =
           body?.userLanguage?.filter(
             (newLang) =>
               !userLanguages.some(
-                (existingLang) => existingLang.languages === newLang,
+                (existingLang) => existingLang?.languages === newLang,
               ),
           ) || [];
 
-        if (filteredLanguages.length) {
+        if (filteredLanguages?.length) {
           const languagesItemsArray = await Promise.all(
-            filteredLanguages.map(async (item) =>
+            filteredLanguages?.map(async (item) =>
               this.userLanguageRepository.create({
                 users: user,
                 languages: item,
@@ -283,9 +281,19 @@ export class UsersService {
         }
       }
 
-      if (body?.typesOfModeling) {
+      if (body?.typesOfModeling && body?.typesOfModeling.length) {
+        const typesOfModeling = user?.typesOfModeling || [];
+
+        const filteredTypesOfModeling =
+          body?.typesOfModeling?.filter(
+            (newLang) =>
+              !typesOfModeling.some(
+                (existingLang) => existingLang?.typesOfModeling === newLang,
+              ),
+          ) || [];
+
         const typesOfModelingItemsArray = await Promise.all(
-          body.typesOfModeling.map((item) =>
+          filteredTypesOfModeling?.map((item) =>
             this.typeOfModelingRepository.create({
               users: user,
               typesOfModeling: item,
@@ -296,17 +304,29 @@ export class UsersService {
         await this.typeOfModelingRepository.save(typesOfModelingItemsArray);
       }
 
-      if (body?.workingDaysWeek) {
-        const workingDaysWeekArray = await Promise.all(
-          body.workingDaysWeek.map((item) =>
-            this.workingDaysWeekRepository.create({
-              users: user,
-              workingDaysWeek: item,
-            }),
-          ),
-        );
+      if (body?.workingDaysWeek && body?.workingDaysWeek.length) {
+        const workingDaysWeekItem: any = user?.workingDaysWeek;
 
-        await this.typeOfModelingRepository.save(workingDaysWeekArray);
+        const filteredWorkDaysWeek =
+          body?.workingDaysWeek?.filter(
+            (newLang) =>
+              !workingDaysWeekItem.some(
+                (existingLang) => existingLang?.workingDaysWeek === newLang,
+              ),
+          ) || [];
+
+        if (filteredWorkDaysWeek?.length) {
+          await Promise.all(
+            filteredWorkDaysWeek?.map(async (item) => {
+              const saved = this.workingDaysWeekRepository.create({
+                users: user,
+                workingDaysWeek: item,
+              });
+
+              await this.workingDaysWeekRepository.save(saved);
+            }),
+          );
+        }
       }
 
       if (body?.typesOfEvents) {
