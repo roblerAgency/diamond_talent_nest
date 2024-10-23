@@ -95,7 +95,7 @@ export class UsersController {
     return this.usersService.editUser({ id, body });
   }
 
-  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Delete(':id')
   softDeleteUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.softDeleteUser({ id });
