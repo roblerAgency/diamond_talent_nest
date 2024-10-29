@@ -52,7 +52,7 @@ export class UsersController {
     });
   }
 
-  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN)
+  @Roles(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.USER)
   @Get()
   getAllUsers(
     @Query() queries: { limit: number; page: number; search: any },
