@@ -93,6 +93,8 @@ export class UsersService {
   async getAllUsers({
     queries,
     filterUser,
+    role,
+    userRole,
     country,
     city,
     user,
@@ -101,6 +103,8 @@ export class UsersService {
   }: {
     queries: { limit: number; page: number; search: any };
     filterUser?: any;
+    role: ROLES;
+    userRole: USER_ROLES;
     country: string;
     city: string;
     user: IUserReq;
@@ -120,14 +124,6 @@ export class UsersService {
           gender.toLowerCase().includes(search),
         );
 
-        const matchingRoles = Object.values(ROLES).filter((roles) =>
-          roles.toLowerCase().includes(search),
-        );
-
-        const matchingUserRoles = Object.values(USER_ROLES).filter((roles) =>
-          roles.toLowerCase().includes(search),
-        );
-
         const matchingUserStatusAccount = Object.values(STATUS_ACCOUNT).filter(
           (status) => status.toLowerCase().includes(search),
         );
@@ -137,21 +133,19 @@ export class UsersService {
           { lastName: Like(`%${search}%`) },
           { email: Like(`%${search}%`) },
           { address: Like(`%${search}%`) },
-          { userRole: In(matchingUserRoles) },
           { gender: In(matchingGenders) },
-          { role: In(matchingRoles) },
           { verify: In(matchingUserStatusAccount) },
         ];
       }
 
       if (filterUser) {
-        if (filterUser.age) {
+        if (filterUser?.age) {
           whereConditions.age = Number(filterUser.age);
         }
-        if (filterUser.height) {
+        if (filterUser?.height) {
           whereConditions.height = Number(filterUser.height);
         }
-        if (filterUser.extent) {
+        if (filterUser?.extent) {
           whereConditions.weight = Number(filterUser.weight);
         }
       }
@@ -172,11 +166,18 @@ export class UsersService {
         else whereConditions.country = In(countriesArray);
       }
 
+      if (role) whereConditions.role = role; 
+
+      if (userRole) whereConditions.userRole = userRole; 
+
       let [users, count] = await this.usersRepository.findAndCount({
         where: whereConditions,
         skip: (page - 1) * limit,
         take: limit,
         relations: ['userLanguage', 'uploadImages'],
+        order: {
+          createdAt: 'DESC', 
+      },
       });
 
       if (completeRegister)

@@ -29,7 +29,7 @@ import { IsPublic } from 'src/auth/decorators/public.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
 // Commons
-import { ResponseInterceptor, ROLES } from '../../commons';
+import { ResponseInterceptor, ROLES, USER_ROLES } from '../../commons';
 
 // Entities
 import { User } from './entities/user.entity';
@@ -58,6 +58,8 @@ export class UsersController {
     @Query() queries: { limit: number; page: number; search: any },
     @Query('filterUser') filterUser: string,
     @Query('completeRegister') completeRegister: string,
+    @Query('role') role: ROLES,
+    @Query('userRole') userRole: USER_ROLES,
     @Query('isArchive') isArchive: string,
     @Query('country') country: string,
     @Query('city') city: string,
@@ -80,6 +82,8 @@ export class UsersController {
       user: req.user,
       isArchive,
       completeRegister,
+      role,
+      userRole,
     });
   }
 
