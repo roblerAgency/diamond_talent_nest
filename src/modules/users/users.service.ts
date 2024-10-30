@@ -100,6 +100,7 @@ export class UsersService {
     user,
     isArchive,
     completeRegister,
+    nationality
   }: {
     queries: { limit: number; page: number; search: any };
     filterUser?: any;
@@ -110,6 +111,7 @@ export class UsersService {
     user: IUserReq;
     isArchive: string;
     completeRegister: string;
+    nationality: string
   }): Promise<{ users: User[]; count: number }> {
     try {
       const { sub } = user;
@@ -173,6 +175,14 @@ export class UsersService {
         if (Array.isArray(whereConditions))
           whereConditions.push({ country: In(countriesArray) });
         else whereConditions.country = In(countriesArray);
+      }
+
+      if (nationality) {
+        const nationalityArray = nationality.split(',');
+
+        if (Array.isArray(whereConditions))
+          whereConditions.push({ nationality: In(nationalityArray) });
+        else whereConditions.nationality = In(nationalityArray);
       }
 
       if (role) whereConditions.role = role; 
