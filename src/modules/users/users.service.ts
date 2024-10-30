@@ -128,6 +128,13 @@ export class UsersService {
           (status) => status.toLowerCase().includes(search),
         );
 
+        const matchingRoles = Object.values(ROLES).filter((roles) =>
+          roles.toLowerCase().includes(search),
+        );
+        const matchingUserRoles = Object.values(USER_ROLES).filter((roles) =>
+          roles.toLowerCase().includes(search),
+        );
+
         whereConditions = [
           { firstName: Like(`%${search}%`) },
           { lastName: Like(`%${search}%`) },
@@ -135,6 +142,8 @@ export class UsersService {
           { address: Like(`%${search}%`) },
           { gender: In(matchingGenders) },
           { verify: In(matchingUserStatusAccount) },
+          { userRole: In(matchingUserRoles) },
+          { role: In(matchingRoles) },
         ];
       }
 
