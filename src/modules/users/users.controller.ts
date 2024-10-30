@@ -63,6 +63,7 @@ export class UsersController {
     @Query('isArchive') isArchive: string,
     @Query('country') country: string,
     @Query('city') city: string,
+    @Query('nationality') nationality: string,
     @Req() req,
   ): Promise<{ users: User[]; count: number }> {
     let parsedFilterUser;
@@ -84,6 +85,7 @@ export class UsersController {
       completeRegister,
       role,
       userRole,
+      nationality
     });
   }
 
