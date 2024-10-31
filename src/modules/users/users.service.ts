@@ -142,6 +142,7 @@ export class UsersService {
           { lastName: Like(`%${search}%`) },
           { email: Like(`%${search}%`) },
           { address: Like(`%${search}%`) },
+          { postalCode: Like(`%${search}%`) },
           { gender: In(matchingGenders) },
           { verify: In(matchingUserStatusAccount) },
           { userRole: In(matchingUserRoles) },

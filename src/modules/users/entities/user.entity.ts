@@ -22,7 +22,7 @@ import {
   WEEKLY_HOURS,
   COUNTRY,
   STATUS_ACCOUNT,
-  HAIR
+  HAIR,
 } from '../../../commons/';
 
 // Entities
@@ -56,16 +56,21 @@ export class User extends BaseEntity implements IUser {
   weight: number;
 
   @Column('decimal', { precision: 5, scale: 2, default: null })
-  extent: number
+  extent: number;
 
-  @Column('decimal', { precision: 5, scale: 2, default: null, name: 'clothing_size' })
+  @Column('decimal', {
+    precision: 5,
+    scale: 2,
+    default: null,
+    name: 'clothing_size',
+  })
   clothingSize: number;
 
   @Column({ type: 'bigint', default: null })
   contact: number;
 
   @Column({ type: 'bigint', default: null, name: 'alternate_phone_number' })
-  alternatePhoneNumber: number
+  alternatePhoneNumber: number;
 
   @Column({ type: 'varchar', length: 255, name: 'first_name' })
   firstName: string;
@@ -83,8 +88,6 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'varchar', length: 100, default: null })
   etnia: string;
 
- 
-
   @Column({ type: 'varchar', length: 100, default: null })
   shoes: string;
 
@@ -93,6 +96,9 @@ export class User extends BaseEntity implements IUser {
 
   @Column({ type: 'varchar', length: 255, default: null })
   location: string;
+
+  @Column({ type: 'varchar', length: 100, default: null, name: 'postal_code' })
+  postalCode: string;
 
   @Column({ type: 'text', default: null, name: 'about_me' })
   aboutMe: string;
@@ -142,28 +148,28 @@ export class User extends BaseEntity implements IUser {
     default: null,
     name: 'customer_services_skills',
   })
-  customerServiceSkills: string
+  customerServiceSkills: string;
 
   @Column({
     type: 'text',
     default: null,
     name: 'knowledge_of_protocols_and_procedures',
   })
-  knowledgeOfProtocolsAndProcedures: string
+  knowledgeOfProtocolsAndProcedures: string;
 
   @Column({
     type: 'text',
     default: null,
     name: 'customer_testimonials_or_recommendations',
   })
-  customerTestimonialsOrRecommendations: string
+  customerTestimonialsOrRecommendations: string;
 
   @Column({
     type: 'text',
     default: null,
     name: 'reference_contacts_in_the_industry',
   })
-  referenceContactsInTheIndustry: string
+  referenceContactsInTheIndustry: string;
 
   @Column({
     type: 'varchar',
@@ -171,7 +177,7 @@ export class User extends BaseEntity implements IUser {
     default: null,
     name: 'photographs_of_previous_works',
   })
-  photographsOfPreviousWorks: string
+  photographsOfPreviousWorks: string;
 
   @Column({ type: 'boolean', default: false, name: 'registered_self_employed' })
   registeredSelfEmployed: boolean;
@@ -212,7 +218,11 @@ export class User extends BaseEntity implements IUser {
   @Column({ type: 'enum', enum: COUNTRY, default: null })
   country: COUNTRY;
 
-  @Column({ type: 'enum', enum: STATUS_ACCOUNT, default: STATUS_ACCOUNT.PENDING })
+  @Column({
+    type: 'enum',
+    enum: STATUS_ACCOUNT,
+    default: STATUS_ACCOUNT.PENDING,
+  })
   verify: STATUS_ACCOUNT;
 
   @Column({
@@ -239,7 +249,7 @@ export class User extends BaseEntity implements IUser {
   typeOfEventCategoryItem: TypeOfEventCategoryItem;
 
   @OneToMany(() => Upload, (upload) => upload.users)
-  uploadImages: Upload 
+  uploadImages: Upload;
 
   @BeforeInsert()
   async hashPassword() {
