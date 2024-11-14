@@ -69,7 +69,8 @@ export class UsersController {
     let parsedFilterUser;
     if (filterUser) {
       try {
-        parsedFilterUser = JSON.parse(filterUser);
+        const validJsonString = filterUser.replace(/(\w+)=/g, '"$1":');
+        parsedFilterUser = JSON.parse(validJsonString);
       } catch (error) {
         throw new Error('Invalid filterUser format');
       }
@@ -85,7 +86,7 @@ export class UsersController {
       completeRegister,
       role,
       userRole,
-      nationality
+      nationality,
     });
   }
 
