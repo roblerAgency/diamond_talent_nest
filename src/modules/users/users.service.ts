@@ -100,7 +100,7 @@ export class UsersService {
     user,
     isArchive,
     completeRegister,
-    nationality
+    nationality,
   }: {
     queries: { limit: number; page: number; search: any };
     filterUser?: any;
@@ -111,7 +111,7 @@ export class UsersService {
     user: IUserReq;
     isArchive: string;
     completeRegister: string;
-    nationality: string
+    nationality: string;
   }): Promise<{ users: User[]; count: number }> {
     try {
       const { sub } = user;
@@ -186,9 +186,9 @@ export class UsersService {
         else whereConditions.nationality = In(nationalityArray);
       }
 
-      if (role) whereConditions.role = role; 
+      if (role) whereConditions.role = role;
 
-      if (userRole) whereConditions.userRole = userRole; 
+      if (userRole) whereConditions.userRole = userRole;
 
       let [users, count] = await this.usersRepository.findAndCount({
         where: whereConditions,
@@ -196,8 +196,8 @@ export class UsersService {
         take: limit,
         relations: ['userLanguage', 'uploadImages'],
         order: {
-          createdAt: 'DESC', 
-      },
+          createdAt: 'DESC',
+        },
       });
 
       if (completeRegister)
