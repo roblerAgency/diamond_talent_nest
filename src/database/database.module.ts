@@ -1,8 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigType } from '@nestjs/config';
-
-// Config
 import config from 'config/config';
 
 @Global()
@@ -20,8 +18,14 @@ import config from 'config/config';
           password,
           database: name,
           autoLoadEntities: true,
-          synchronize: true,
-          synchronize: false,
+          synchronize: false, // <-- Asegúrate de que esté en 'false' para producción.
+          
+          // --- CONFIGURACIÓN PARA MANTENER LA CONEXIÓN ---
+          keepConnectionAlive: true,
+          extra: {
+            connectionLimit: 10, // Límite de conexiones en el pool
+          },
+          // ---------------------------------------------
         };
       },
     }),
