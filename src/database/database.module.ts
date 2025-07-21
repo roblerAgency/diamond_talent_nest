@@ -20,14 +20,13 @@ import config from 'config/config';
           database: name,
           autoLoadEntities: true,
           synchronize: false,
-          // --- AÑADE ESTAS LÍNEAS ---
-          keepConnectionAlive: true, // <-- Mantiene la conexión viva
+          keepConnectionAlive: true,
           extra: {
-            connectionLimit: 10, // <-- Usa un pool de conexiones
-            idleTimeoutMillis: 60000, // <-- Cierra conexiones inactivas después de 60s
-            connectTimeout: 10000 // <-- Tiempo de espera para la conexión inicial
+            connectionLimit: 10,      
+            connectTimeout: 20000,  
+            acquireTimeout: 20000,   
           },
-          // --------------------------
+          // -----------------------------
         };
       },
     }),
