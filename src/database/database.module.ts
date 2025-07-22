@@ -9,26 +9,24 @@ import config from 'config/config';
   imports: [
     TypeOrmModule.forRootAsync({
       inject: [config.KEY],
-      useFactory: (configService: ConfigType<typeof config>) => ({
-        // 1. Volver al tipo correcto
-        type: 'mysql',
+      useFactory: (configService: ConfigType<typeof config>) => {
+        // Obtenemos las partes de la URL desde tu configuración
+        const { host, port, user, password, name } = configService.database;
 
-        host: configService.database.host,
-        port: configService.database.port,
-        username: configService.database.user,
-        password: configService.database.password,
-        database: configService.database.name,
+        // 1. Construimos la URL base manualmente
+        const dbUrl = `mysql://${user}:${password}@${host}:${port}/${name}`;
 
-        // 2. Mover la configuración SSL dentro de 'extra'
-        extra: {
-          ssl: {
-            rejectUnauthorized: false,
-          },
-        },
-        
-        autoLoadEntities: true,
-        synchronize: false,
-      }),
+        // 2. Le añadimos el parámetro SSL de forma explícita. Esto es lo más importante.
+        const urlWithSsl = `${dbUrl}?ssl={"rejectUnauthorized":false}`;
+
+        return {
+          type: 'mysql',
+          // 3. Usamos la nueva URL que acabamos de construir
+          url: urlWithSsl,
+          autoLoadEntities: true,
+          synchronize: false,
+        };
+      },
     }),
   ],
   exports: [TypeOrmModule],
