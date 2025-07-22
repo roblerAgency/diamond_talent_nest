@@ -1,16 +1,33 @@
+// src/database/data-source.ts
 import * as dotenv from 'dotenv';
-import { DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 
 dotenv.config();
 
-const { DB_DATABASE, DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD } = process.env;
+// Usamos 'DataSourceOptions' para tener un tipado correcto
+export const dataSourceOptions: DataSourceOptions = {
+  // 1. Forzar el uso del driver 'mysql2'
+  type: 'mysql2',
 
-export const dataSourceOptions = new DataSource({
-  type: 'mysql',
-  url: `mysql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}`,
+  // 2. Pasar los parámetros directamente desde las variables de entorno
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT, 10), // Convertir el puerto a número
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+
+  // 3. Añadir la configuración SSL para Railway
+  ssl: {
+    rejectUnauthorized: false,
+  },
+
   logging: false,
   synchronize: false,
-  entities: ['src/**/*.entity{.ts,.js}'],
-  migrations: ['src/database/migrations/*.ts'],
+  entities: ['dist/**/*.entity{.js,.ts}'], // Usar 'dist' para producción
+  migrations: ['dist/database/migrations/*{.js,.ts}'], // Usar 'dist' para producción
   migrationsTableName: 'migrations',
-});
+};
+
+// Exportar la instancia para que los comandos de TypeORM la puedan usar
+const dataSource = new DataSource(dataSourceOptions);
+export default dataSource;
