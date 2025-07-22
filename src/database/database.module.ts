@@ -1,4 +1,3 @@
-// src/database/database.module.ts
 import { Global, Module } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,7 +10,7 @@ import config from 'config/config';
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => ({
         type: 'mysql',
-        url: configService.database.url, // 👈 usa la DATABASE_URL completa
+        url: configService.database.url,
         autoLoadEntities: true,
         synchronize: false,
       }),
