@@ -4,6 +4,7 @@ import { ConfigType } from '@nestjs/config';
 
 import config from '../../config/config';
 
+
 @Global()
 @Module({
   imports: [
@@ -13,17 +14,19 @@ import config from '../../config/config';
         type: 'mysql',
         host: configService.database.host,
         port: configService.database.port,
-        username: configService.database.username,
+        // --- CORRECCIÓN 1 ---
+        username: configService.database.user, // Cambiado de 'username' a 'user'
+        // --------------------
         password: configService.database.password,
-        database: configService.database.database,
+        // --- CORRECCIÓN 2 ---
+        database: configService.database.name, // Cambiado de 'database' a 'name'
+        // --------------------
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         synchronize: false,
         autoLoadEntities: true,
-        // --- LÍNEA A AÑADIR ---
         ssl: {
           rejectUnauthorized: false,
         },
-        // --------------------
       }),
     }),
   ],
