@@ -24,7 +24,7 @@ import config from 'config/config';
 
         return {
           type: 'mysql',
-          url: urlWithEncodedSsl, // Usamos la nueva URL codificada
+          url: process.env.DATABASE_URL, 
           autoLoadEntities: true,
           synchronize: false,
         };
