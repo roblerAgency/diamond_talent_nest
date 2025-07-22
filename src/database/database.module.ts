@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'mysql',
-        url: process.env.DATABASE_URL, // <- único punto de configuración
+        url: process.env.DATABASE_URL,
         autoLoadEntities: true,
         synchronize: false,
       }),
