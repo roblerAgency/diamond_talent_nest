@@ -1,28 +1,31 @@
-import { Global, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigType } from '@nestjs/config';
+// src/database/database.module.ts
 
-// Config
-import config from 'config/config';
+// ... (otros imports)
+import { TypeOrmModule } from '@nestjs/typeorm';
+import config from '../config/config';
+import { ConfigType } from '@nestjs/config';
 
 @Global()
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       inject: [config.KEY],
-      useFactory: (configService: ConfigType<typeof config>) => {
-        const { user, host, name, password, port } = configService.database;
-        return {
-          type: 'mysql',
-          host,
-          port,
-          username: user,
-          password,
-          database: name,
-          autoLoadEntities: true,
-          synchronize: false, // Solo una vez
-        };
-      },
+      useFactory: (configService: ConfigType<typeof config>) => ({
+        type: 'mysql',
+        host: configService.database.host,
+        port: configService.database.port,
+        username: configService.database.username,
+        password: configService.database.password,
+        database: configService.database.database,
+        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        synchronize: false,
+        autoLoadEntities: true,
+        // --- LÍNEA A AÑADIR ---
+        ssl: {
+          rejectUnauthorized: false,
+        },
+        // --------------------
+      }),
     }),
   ],
   exports: [TypeOrmModule],
