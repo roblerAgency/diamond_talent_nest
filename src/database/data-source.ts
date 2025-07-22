@@ -14,7 +14,7 @@ const urlWithEncodedSsl = `${dbUrl}?ssl=%7B%22rejectUnauthorized%22%3Afalse%7D`;
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'mysql',
-  url: urlWithEncodedSsl, // Usamos la nueva URL codificada
+  url: process.env.DATABASE_URL,
   entities: ['dist/**/*.entity{.js,.ts}'],
   migrations: ['dist/database/migrations/*{.js,.ts}'],
   migrationsTableName: 'migrations',
