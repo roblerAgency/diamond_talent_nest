@@ -1,9 +1,8 @@
-// src/database/database.module.ts
-
-// ... (otros imports)
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import config from '../config/config';
 import { ConfigType } from '@nestjs/config';
+
+import config from 'config/config';
 
 @Global()
 @Module({
