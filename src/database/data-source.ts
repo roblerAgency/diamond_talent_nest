@@ -4,25 +4,19 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 
 dotenv.config();
 
+// 1. Leemos las variables de entorno individuales
+const { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE } = process.env;
+
+// 2. Construimos la URL base manualmente
+const dbUrl = `mysql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
+
+// 3. Le añadimos el parámetro SSL
+const urlWithSsl = `${dbUrl}?ssl={"rejectUnauthorized":false}`;
+
 export const dataSourceOptions: DataSourceOptions = {
-  // 1. Volver al tipo correcto
   type: 'mysql',
-
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT, 10),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-
-  // 2. Mover la configuración SSL dentro de 'extra'
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
-
-  logging: false,
-  synchronize: false,
+  // 4. Usamos la URL completa
+  url: urlWithSsl,
   entities: ['dist/**/*.entity{.js,.ts}'],
   migrations: ['dist/database/migrations/*{.js,.ts}'],
   migrationsTableName: 'migrations',
