@@ -1,9 +1,8 @@
+// src/database/database.module.ts
 import { Global, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigType } from '@nestjs/config';
-
-import config from '../../config/config';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import config from 'config/config'; // Asegúrate de que la ruta sea correcta
 
 @Global()
 @Module({
@@ -11,22 +10,23 @@ import config from '../../config/config';
     TypeOrmModule.forRootAsync({
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => ({
-        type: 'mysql',
+        // 1. Forzar el uso del driver 'mysql2'
+        type: 'mysql2',
+
+        // 2. Usar los nombres de propiedad correctos ('user' y 'name')
         host: configService.database.host,
         port: configService.database.port,
-        // --- CORRECCIÓN 1 ---
-        username: configService.database.user, // Cambiado de 'username' a 'user'
-        // --------------------
+        username: configService.database.user,
         password: configService.database.password,
-        // --- CORRECCIÓN 2 ---
-        database: configService.database.name, // Cambiado de 'database' a 'name'
-        // --------------------
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        synchronize: false,
-        autoLoadEntities: true,
+        database: configService.database.name,
+
+        // 3. Añadir la configuración SSL
         ssl: {
           rejectUnauthorized: false,
         },
+
+        autoLoadEntities: true,
+        synchronize: false,
       }),
     }),
   ],
