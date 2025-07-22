@@ -6,11 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'mysql',
-        url: process.env.DATABASE_URL,
-        autoLoadEntities: true,
-        synchronize: false,
+  inject: [config.KEY],
+  useFactory: (configService: ConfigType<typeof config>) => ({
+    type: 'mysql',
+    url: configService.database.url, // <— aquí
+    autoLoadEntities: true,
+    synchronize: false,
       }),
     }),
   ],
