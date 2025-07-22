@@ -10,19 +10,21 @@ import config from 'config/config';
     TypeOrmModule.forRootAsync({
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
-        // Obtenemos las partes de la URL desde tu configuración
         const { host, port, user, password, name } = configService.database;
 
-        // 1. Construimos la URL base manualmente
+        // Construimos la URL base
         const dbUrl = `mysql://${user}:${password}@${host}:${port}/${name}`;
 
-        // 2. Le añadimos el parámetro SSL de forma explícita. Esto es lo más importante.
-        const urlWithSsl = `${dbUrl}?ssl={"rejectUnauthorized":false}`;
+        // 1. EL CAMBIO CLAVE: El parámetro SSL ahora está codificado para URL.
+        // `{"rejectUnauthorized":false}` se convierte en `%7B%22rejectUnauthorized%22%3Afalse%7D`
+        const urlWithEncodedSsl = `${dbUrl}?ssl=%7B%22rejectUnauthorized%22%3Afalse%7D`;
+
+        // 2. (OPCIONAL PERO RECOMENDADO) Añade este log para verificar en Railway
+        console.log('Connecting with URL:', urlWithEncodedSsl);
 
         return {
           type: 'mysql',
-          // 3. Usamos la nueva URL que acabamos de construir
-          url: urlWithSsl,
+          url: urlWithEncodedSsl, // Usamos la nueva URL codificada
           autoLoadEntities: true,
           synchronize: false,
         };
