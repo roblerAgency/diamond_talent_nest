@@ -1,16 +1,16 @@
 // src/database/database.module.ts
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import config from 'config';
+import { ConfigService } from '@nestjs/config';
 
 @Global()
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      inject: [config.KEY],
-      useFactory: (configService) => ({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
-        url: configService.get('DATABASE_URL'),
+        url: configService.get('DATABASE_URL'), // Asegúrate de que esta variable esté configurada
         autoLoadEntities: true,
         synchronize: false,
       }),
