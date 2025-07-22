@@ -1,9 +1,9 @@
 // src/config/config.ts
-import { ConfigService } from '@nestjs/config';
+import { registerAs } from '@nestjs/config';
 
-export const config = (configService: ConfigService) => ({
+export default registerAs('config', () => ({
   database: {
-    url: configService.get<string>('DATABASE_URL'),
+    url: process.env.DATABASE_URL,
   },
-  jwtSecret: configService.get<string>('JWT_SECRET'),
-});
+  jwtSecret: process.env.JWT_SECRET,
+}));
