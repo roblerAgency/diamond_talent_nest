@@ -1,16 +1,17 @@
-// src/database/data-source.ts
 import * as dotenv from 'dotenv';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 dotenv.config();
 
-export const dataSourceOptions: DataSourceOptions = {
-  type: 'mysql',
-  url: process.env.DATABASE_URL,
-  entities: ['dist/**/*.entity{.js,.ts}'],
-  migrations: ['dist/database/migrations/*{.js,.ts}'],
-  migrationsTableName: 'migrations',
-};
+const { DB_DATABASE, DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD } = process.env;
 
-const dataSource = new DataSource(dataSourceOptions);
-export default dataSource;
+export const dataSourceOptions = new DataSource({
+  type: 'mysql',
+  url: `mysql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}`,
+  logging: false,
+  synchronize: true,
+  synchronize: false,
+  entities: ['src/**/*.entity{.ts,.js}'],
+  migrations: ['src/database/migrations/*.ts'],
+  migrationsTableName: 'migrations',
+});
